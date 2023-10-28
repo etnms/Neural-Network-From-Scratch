@@ -1,2 +1,6 @@
 venv/
 __pycache__
+.vscode
+
+layer/__pycache__
+activation/__pycache__
