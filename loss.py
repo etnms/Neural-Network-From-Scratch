@@ -24,3 +24,12 @@ class LossCategoricalCrossentropy(Loss):
         
         negative_log_likelihoods = -np.log(correct_confidences)
         return negative_log_likelihoods
+    
+    def backward(self, dvalues, y_true):
+        # Number of samples
+        samples = len(dvalues) #number of rows in the dvalues matrix
+        
+        # Calculate the gradient
+        self.dvalues = dvalues.copy()
+        self.dvalues[range(samples), y_true] -= 1
+        self.dvalues /= samples
