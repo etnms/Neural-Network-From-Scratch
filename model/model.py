@@ -1,3 +1,7 @@
+'''
+Model class with save and load functions to save and load a model that has been created.
+'''
+
 class Model:
     def __init__(self, layer1, layer2, activation1, activation2):
         self.layer1 = layer1
@@ -5,7 +9,7 @@ class Model:
         self.activation1 = activation1
         self.activation2 = activation2
 
-    def save_model(self, weights, biases):
+    def save_model(self):
         model_data = {
         'layer1_weights': self.layer1.weights,
         'layer1_biases': self.layer1.biases,
