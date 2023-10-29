@@ -2,7 +2,9 @@ import numpy as np
 
 
 '''
-Base class for dense layers
+Base class for dense layers.
+
+To do: Need to change np.zeros to random values
 '''
 
 

@@ -1,6 +1,6 @@
 import numpy as np
 from epoch import epoch_function
-
+from create_layer import CreateLayer
 
 
 np.random.seed(0)
@@ -20,9 +20,11 @@ def create_data(points, classes):
 
 X, y = create_data(100, 3)
 
+layer = CreateLayer.create(number_classes=2, number_neurons=512, activation_function='test')
+
 # Hyperparameters
 learning_rate = 0.1
 num_epochs = 1000  # Specify the number of training epochs
 batch_size = 8
 
-epoch_function(batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=X, data_y=y)
+#epoch_function(batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=X, data_y=y)

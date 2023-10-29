@@ -1,3 +1,4 @@
+import string
 import numpy as np
 from loss import LossCategoricalCrossentropy
 from activation import activation
@@ -10,11 +11,12 @@ Hard coded values for the layers and activation -> this also needs to be updated
 
 # Temporary hardcoding for testing purposes
 
-dense1 = layer.LayerDense(2, 512) #2 because 100, 3 from dataset and 3 can be whatever
+dense1 = layer.LayerDense(2, 512) #First number = classes, last number = output neurons
 activation1 = activation.ActivationReLU()
 
-dense2 = layer.LayerDense(512, 3) #3 because previous one is 3 (dense1)
+dense2 = layer.LayerDense(512, 3) #First number = previous neurons, last number = output neurons
 activation2 = activation.ActivationSoftmax()
+
 
 def forward_and_backward_pass(layer1, activation1, layer2, activation2, data_X, data_y, learning_rate):
     # Forward pass
