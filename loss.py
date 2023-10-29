@@ -2,7 +2,7 @@ import numpy as np
 
 
 '''
-Loss classes. Loss class as base and Categorical entropy derived from it
+Loss classes. Loss class as base and Categorical Cross entropy derived from it
 '''
 
 class Loss:

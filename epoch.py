@@ -3,7 +3,11 @@ from loss import LossCategoricalCrossentropy
 from activation import activation
 from layer import layer
 
-# Forward pass 
+'''
+Epoch functions. This needs to be updated in the future to be clearer.
+Hard coded values for the layers and activation -> this also needs to be updated.
+'''
+
 # Temporary hardcoding for testing purposes
 
 dense1 = layer.LayerDense(2, 512) #2 because 100, 3 from dataset and 3 can be whatever
