@@ -17,6 +17,7 @@ class ActivationReLU:
         self.dvalues = dvalues.copy()  # Copy the input gradient
         self.dvalues[self.output <= 0] = 0  # Set gradient to 0 for non-positive input values
 
+
 class ActivationSoftmax:
     def forward(self, inputs):
         #axis = 1 = row, 0 = column, default none
@@ -32,3 +33,11 @@ class ActivationSoftmax:
             single_output = single_output.reshape(-1, 1)
             jacobian_matrix = np.diagflat(single_output) - np.dot(single_output, single_output.T)
             self.dvalues[index] = np.dot(jacobian_matrix, single_dvalues)
+
+
+class ActivationTanh:
+    def forward(input):
+        return np.tanh(input)
+
+    def backward(input):
+        return 1-np.tanh(input)**2
