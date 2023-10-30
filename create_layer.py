@@ -12,6 +12,8 @@ class CreateLayer:
                 activation_layer = activation.ActivationReLU()
             case 'softmax':
                 activation_layer = activation.ActivationSoftmax()
+            case 'tanh':
+                activation_layer = activation.ActivationTanh()
             case _:
                 pass
             

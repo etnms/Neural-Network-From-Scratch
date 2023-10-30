@@ -36,8 +36,8 @@ class ActivationSoftmax:
 
 
 class ActivationTanh:
-    def forward(input):
-        return np.tanh(input)
+    def forward(self, input):
+        self.output = np.tanh(input)
 
-    def backward(input):
-        return 1-np.tanh(input)**2
+    def backward(self, dvalues):
+        self.dvalues = dvalues * (1 - self.output ** 2)

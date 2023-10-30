@@ -23,7 +23,7 @@ X, y = create_data(100, 3)
 # Hyperparameters
 learning_rate = 0.1
 num_epochs = 100  # Specify the number of training epochs
-batch_size = 8
+batch_size = 1
 
 # Number of classes = number of inputs
 # In case of second layer until the end it takes the number of neurons from the previous layer
