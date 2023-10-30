@@ -14,8 +14,5 @@ class CreateLayer:
                 activation_layer = activation.ActivationSoftmax()
             case _:
                 pass
+            
         return layer_dense, activation_layer
-
-
-                
-

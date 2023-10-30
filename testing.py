@@ -20,11 +20,20 @@ def create_data(points, classes):
 
 X, y = create_data(100, 3)
 
-layer = CreateLayer.create(number_classes=2, number_neurons=512, activation_function='test')
-
 # Hyperparameters
 learning_rate = 0.1
-num_epochs = 1000  # Specify the number of training epochs
+num_epochs = 100  # Specify the number of training epochs
 batch_size = 8
 
-#epoch_function(batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=X, data_y=y)
+# Number of classes = number of inputs
+# In case of second layer until the end it takes the number of neurons from the previous layer
+# Ex layer1(2,512), layer2(512,3) layer3(3, 128) etc.
+layer1 = CreateLayer.create(number_classes=2, number_neurons=512, activation_function='relu')
+layer2 = CreateLayer.create(number_classes=512, number_neurons=3, activation_function='softmax')
+layers=[layer1, layer2]
+
+layer_dense_list = [layer[0] for layer in layers]
+activation_layer_list = [layer[1] for layer in layers]
+
+epoch_function(layers = layer_dense_list, activations=activation_layer_list, batch_size=batch_size, 
+               num_epochs=num_epochs, learning_rate=learning_rate,data_X=X, data_y=y)
