@@ -1,5 +1,5 @@
 import numpy as np
-
+import pandas as pd
 
 '''
 Base class for dense layers.
@@ -14,13 +14,17 @@ class LayerDense:
         self.biases = np.zeros((1, n_neurons))
 
     def forward(self, inputs):
+        # Check for pandas data type, convert to numpy if data is Series or DataFrame
+        if isinstance(inputs, pd.Series) or isinstance(inputs, pd.DataFrame):
+            inputs = inputs.to_numpy()
+            
         self.inputs = inputs
         self.output = np.dot(inputs, self.weights) + self.biases
         
     def backward(self, dvalues):
-        #Gradients on parameters
+        # Gradients on parameters
         self.dweights = np.dot(self.inputs.T, dvalues)
         self.dbiases = np.sum(dvalues, axis=0, keepdims=True)
         
-        #Gradient on values
+        # Gradient on values
         self.dvalues = np.dot(dvalues, self.weights.T)
