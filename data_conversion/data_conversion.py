@@ -17,3 +17,7 @@ def standardization(data, column_name: string):
     mean_value = data[column_name].mean()
     std_dev = data[column_name].std()
     return data[column_name].apply(lambda x: (x - mean_value) / std_dev)
+
+# Simple functions that convert individual arrays in a tokenized_sentence to its actual int value
+def token_to_int(tokenized_sentences):
+    return [token[0] for token in tokenized_sentences]

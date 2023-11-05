@@ -2,8 +2,5 @@ venv/
 __pycache__
 .vscode
 
-layer/__pycache__
-activation/__pycache__
-
 # Windows script to start the virtual environment
 start_venv.bat
