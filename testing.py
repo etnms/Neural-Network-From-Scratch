@@ -46,21 +46,22 @@ label_mapping = {'str': 0, 'int': 1}
 #y = data['Size'].map(label_mapping).astype(int)
 y = data['Category'].map(label_mapping).astype(int)
 
-#X, y = generate_spiral_set.create_data(100, 3)
 
+#X, y = generate_spiral_set.create_data(100, 3)
+print(X)
 #training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_data(X, y, training_size=0.8)
 
 # Hyperparameters
 learning_rate = 1
-num_epochs = 10  # Specify the number of training epochs
-batch_size = 400
+num_epochs = 100  # Specify the number of training epochs
+batch_size = 128
 
 # Number of classes = number of inputs
 # In case of second layer until the end it takes the number of neurons from the previous layer
 # Ex layer1(2,512), layer2(512,3) layer3(3, 128) etc.
-layer1 = CreateLayer.create(number_classes=1, number_neurons=128, activation_function='relu')
+layer1 = CreateLayer.create(number_classes=1, number_neurons=8, activation_function='relu')
 #layer2 = CreateLayer.create(number_classes=128, number_neurons=64, activation_function='relu')
-layer3 = CreateLayer.create(number_classes=128, number_neurons=2, activation_function='softmax')
+layer3 = CreateLayer.create(number_classes=8, number_neurons=2, activation_function='softmax')
 layers=[layer1, layer3]
 
 layer_dense_list = [layer[0] for layer in layers]
