@@ -35,11 +35,14 @@ data['test'] = clean_token_data
 
 data['string_value_stand'] = data_conversion.standardization(data, 'test')
 
+data['length'] = data['String'].apply(len)
+data['alpha'] = data['String'].str.isalpha().astype(int)
+data['numeric'] = data['String'].str.isnumeric().astype(int)
 # 'Int_value' now contains numeric values
 #X = data['Int_value_scaled']
 X = data['string_value_stand']
 
-
+X = data[['length', 'alpha', 'numeric']]
 #X = data_encoded
 #label_mapping = {'small': 0, 'big': 1}
 label_mapping = {'str': 0, 'int': 1}
@@ -48,24 +51,24 @@ y = data['Category'].map(label_mapping).astype(int)
 
 
 #X, y = generate_spiral_set.create_data(100, 3)
-print(X)
-#training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_data(X, y, training_size=0.8)
+
+training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_data(X, y, training_size=0.8)
 
 # Hyperparameters
-learning_rate = 1
-num_epochs = 100  # Specify the number of training epochs
-batch_size = 128
+learning_rate = 0.01
+num_epochs = 10  # Specify the number of training epochs
+batch_size = 16
 
 # Number of classes = number of inputs
 # In case of second layer until the end it takes the number of neurons from the previous layer
 # Ex layer1(2,512), layer2(512,3) layer3(3, 128) etc.
-layer1 = CreateLayer.create(number_classes=1, number_neurons=8, activation_function='relu')
-#layer2 = CreateLayer.create(number_classes=128, number_neurons=64, activation_function='relu')
-layer3 = CreateLayer.create(number_classes=8, number_neurons=2, activation_function='softmax')
-layers=[layer1, layer3]
+layer1 = CreateLayer.create(number_classes=3, number_neurons=16, activation_function='sigmoid')
+layer2 = CreateLayer.create(number_classes=16, number_neurons=2, activation_function='sigmoid')
+#layer3 = CreateLayer.create(number_classes=4, number_neurons=2, activation_function='softmax')
+layers=[layer1, layer2]
 
 layer_dense_list = [layer[0] for layer in layers]
 activation_layer_list = [layer[1] for layer in layers]
 
 epoch_function(layers = layer_dense_list, activations=activation_layer_list, batch_size=batch_size, 
-               num_epochs=num_epochs, learning_rate=learning_rate,data_X=X, data_y=y)
+               num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X, data_y=training_set_y)

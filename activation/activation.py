@@ -5,6 +5,7 @@ import numpy as np
 Activation functions
 - Rectified Linear function
 - Softmax function
+- Sigmoid function
 '''
 
 
@@ -41,3 +42,12 @@ class ActivationTanh:
 
     def backward(self, dvalues):
         self.dvalues = dvalues * (1 - self.output ** 2)
+
+
+# Sigmoid activation function. Useful for binary classification
+class ActivationSigmoid:
+    def forward(self, input):
+        self.output = 1 / (1 + np.exp(-input))
+    
+    def backward(self, dvalues):
+        self.dvalues = dvalues * (self.output * (1 - self.output))
