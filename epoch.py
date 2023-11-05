@@ -61,3 +61,15 @@ def epoch_function(layers, activations, num_epochs, batch_size, learning_rate, d
         average_loss = total_loss / (data_size / batch_size)
         accuracy = np.mean(np.argmax(predictions, axis=1) == data_y) # Assuming data_y represents true class labels
         print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss}, Accuracy: {accuracy}')
+
+
+def testing_model(layers, activations, data_X):
+    x = data_X
+
+    # Forward pass only for testig. We are not trying to update the model but simply test its acuracy
+    for layer, activation in zip(layers, activations):
+        layer.forward(x)
+        activation.forward(layer.output)
+        x = activation.output
+    
+    return x
