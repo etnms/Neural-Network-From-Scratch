@@ -27,7 +27,6 @@ data = pd.read_csv('./dataset/phonemes.csv', encoding='utf-8')
 #clean_token_data = data_conversion.token_to_int(tokenized_sentences)
 #data['test'] = clean_token_data
 
-
 #data['string_value_stand'] = data_conversion.standardization(data, 'test')
 
 #data['length'] = data['String'].apply(len)
@@ -62,9 +61,11 @@ layers=[layer1, layer2, layer3]
 
 layer_dense_list = [layer[0] for layer in layers]
 activation_layer_list = [layer[1] for layer in layers]
+dropout_layer_list = [layer[2] for layer in layers]
 
-model.train_model(layers = layer_dense_list, activations=activation_layer_list, batch_size=batch_size, 
-               num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X, data_y=training_set_y)
+model.train_model(layers = layer_dense_list, activations=activation_layer_list, dropouts=dropout_layer_list,
+                   batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
+                   data_y=training_set_y, training=True)
 
 predictions = model.testing_model(layers=layer_dense_list, activations=activation_layer_list, data_X=testing_set_X)
 

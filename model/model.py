@@ -1,7 +1,7 @@
 from loss import LossCategoricalCrossentropy
 import numpy as np
 import pandas as pd
-
+from dropout import dropout
 
 '''
 Model class with train and testing functions. 
@@ -14,15 +14,18 @@ To implement: Save and load functions to save and load a model that has been cre
 
 class Model:
     # def forward_and_backward_pass(layers, activations, layer1, activation1, layer2, activation2, data_X, data_y, learning_rate):
-    def forward_and_backward_pass(self, layers, activations, data_X, data_y, learning_rate):
+    def forward_and_backward_pass(self, layers, activations, dropouts, data_X, data_y, learning_rate, apply_dropout, training):
         x = data_X
-
+        
         # Forward pass
-        for layer, activation in zip(layers, activations):
+        for layer, activation, dropout in zip(layers, activations, dropouts):
             layer.forward(x)
             activation.forward(layer.output)
             x = activation.output
 
+            if apply_dropout and dropout is not None:
+                dropout.forward(x, training)
+                x = dropout.output
         # Calculate the loss
         loss_function = LossCategoricalCrossentropy()
         loss = loss_function.calculate(x, data_y)
@@ -43,8 +46,11 @@ class Model:
 
         return loss, x
 
-    def train_model(self, layers, activations, num_epochs, batch_size, learning_rate, data_X, data_y):
+    def train_model(self, layers, activations, dropouts, num_epochs, batch_size, learning_rate, data_X, data_y, training):
         data_size = len(data_X)
+
+        # Check if dropout values have been used
+        apply_dropout = self.check_for_dropout(dropouts)
 
         for epoch in range(num_epochs):
             total_loss = 0
@@ -55,7 +61,7 @@ class Model:
                 else:
                     batch_X = data_X[i:i+batch_size]
                 batch_y = data_y[i:i+batch_size]
-                batch_loss, batch_predictions = self.forward_and_backward_pass(layers, activations, batch_X, batch_y, learning_rate)
+                batch_loss, batch_predictions = self.forward_and_backward_pass(layers, activations, dropouts, batch_X, batch_y, learning_rate, apply_dropout, training)
                 total_loss += batch_loss
                 all_predictions.append(batch_predictions)
 
@@ -67,6 +73,11 @@ class Model:
             accuracy = np.mean(np.argmax(predictions, axis=1) == data_y) # Assuming data_y represents true class labels
             print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss}, Accuracy: {accuracy}')
 
+    def check_for_dropout(self, dropouts):
+        if dropouts is None:
+            return False
+        else:
+            return True
 
     def testing_model(self, layers, activations, data_X):
         x = data_X

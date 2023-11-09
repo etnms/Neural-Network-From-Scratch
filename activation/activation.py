@@ -5,6 +5,7 @@ import numpy as np
 Activation functions
 - Rectified Linear function
 - Softmax function
+- Tanh function
 - Sigmoid function
 '''
 
