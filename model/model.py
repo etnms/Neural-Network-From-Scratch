@@ -90,6 +90,15 @@ class Model:
         
         return x
     
+    def save_model(self, layers):
+        model_data = {}
+
+        for i, layer in enumerate(layers):
+            model_data[f'layer{i+1}_weights'] = layer.weights
+            model_data[f'layer{i+1}_biases'] = layer.biases
+        print(model_data)
+
+    
 
 '''
 def save_model(self):
