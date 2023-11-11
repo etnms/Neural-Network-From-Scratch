@@ -117,3 +117,45 @@ class Model:
             return obj.tolist()
         return obj
     
+    def convert_to_numpy_arrays(obj):
+        if isinstance(obj, list):
+            return np.array(obj)
+        return obj
+
+    def load_model(self, name: str):
+        # Get current working directory for input file    
+        cwd = os.getcwd()
+        with open(f'{cwd}/{name}.json', mode='r') as input_file:
+            model_data = json.load(input_file)
+
+        layers = []
+        i = 1
+        while f'layer{i}_weights' in model_data:
+            weights = self.convert_to_numpy_arrays(model_data[f'layer{i}_weights'])
+            biases = self.convert_to_numpy_arrays(model_data[f'layer{i}_biases'])
+            activation_dict = model_data[f'layer{i}_activations']
+
+            # Need to reconstruct your layer and activation objects based on the loaded data.
+
+            '''
+            layer = Layer(input_size=weights.shape[0], output_size=weights.shape[1])
+            layer.weights = weights
+            layer.biases = biases
+
+            # Reconstruct the activation function (assuming it has a name attribute)
+            activation_name = activation_dict.get('name', 'default_activation')
+            #activation = Activation(name=activation_name)
+
+            # Add the layer and activation to the list
+            layers.append((layer, activation))
+            '''
+            i += 1
+
+        return layers
+
+
+
+
+
+
+    
