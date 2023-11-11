@@ -135,27 +135,18 @@ class Model:
             biases = self.convert_to_numpy_arrays(model_data[f'layer{i}_biases'])
             activation_dict = model_data[f'layer{i}_activations']
 
-            # Need to reconstruct your layer and activation objects based on the loaded data.
+            # Need to reconstruct layer and activation objects based on the loaded data.
 
             '''
             layer = Layer(input_size=weights.shape[0], output_size=weights.shape[1])
             layer.weights = weights
             layer.biases = biases
 
-            # Reconstruct the activation function (assuming it has a name attribute)
             activation_name = activation_dict.get('name', 'default_activation')
             #activation = Activation(name=activation_name)
 
-            # Add the layer and activation to the list
             layers.append((layer, activation))
             '''
             i += 1
 
         return layers
-
-
-
-
-
-
-    
