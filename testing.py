@@ -67,7 +67,7 @@ model.train_model(layers = layer_dense_list, activations=activation_layer_list, 
                    batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
                    data_y=training_set_y, training=True)
 
-model.save_model(layers=layer_dense_list)
+model.save_model(layers=layers, name='model')
 
 predictions = model.testing_model(layers=layer_dense_list, activations=activation_layer_list, data_X=testing_set_X)
 

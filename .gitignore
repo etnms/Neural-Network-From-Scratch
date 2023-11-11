@@ -2,5 +2,9 @@ venv/
 __pycache__
 .vscode
 
+# Default name for output when writing to json (Save function)
+model.json
+
+
 # Windows script to start the virtual environment
 start_venv.bat

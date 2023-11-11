@@ -1,7 +1,9 @@
 from loss import LossCategoricalCrossentropy
 import numpy as np
 import pandas as pd
-from dropout import dropout
+import os
+import string
+import json
 
 '''
 Model class with train and testing functions. 
@@ -90,25 +92,28 @@ class Model:
         
         return x
     
-    def save_model(self, layers):
+    def save_model(self, layers, name: string):
         model_data = {}
 
         for i, layer in enumerate(layers):
-            model_data[f'layer{i+1}_weights'] = layer.weights
-            model_data[f'layer{i+1}_biases'] = layer.biases
-        print(model_data)
 
+            model_data[f'layer{i+1}_weights'] = layer[0].weights
+            model_data[f'layer{i+1}_biases'] = layer[0].biases
+            model_data[f'layer{i+1}_activations'] = layer[1].__dict__
+
+        # Get current working directory for output file    
+        cwd = os.getcwd()
+       
+        with open(f'{cwd}/{name}.json', mode='w') as output:
+            # Remove previous content if any
+            output.truncate()
+            # Write to json
+            content = json.dumps(model_data, default=self.convert_to_python_types)
+            output.write(content)
+      
+    # Helper function to convert numpy array to JSON
+    def convert_to_python_types(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return obj
     
-
-'''
-def save_model(self):
-    model_data = {
-    'layer1_weights': self.layer1.weights,
-    'layer1_biases': self.layer1.biases,
-    'layer2_weights': self.layer2.weights,
-    'layer2_biases': self.layer2.biases,
-    'activation1_state': self.activation1.__dict__,
-    'activation2_state': self.activation2.__dict__,
-    }
-    print(model_data)
-'''
