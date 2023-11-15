@@ -1,4 +1,4 @@
-from loss import LossCategoricalCrossentropy
+from loss import LossCategoricalCrossentropy, LossMeanSquaredError
 from utils.utils import convert_to_numpy_arrays, convert_to_python_types
 from layer.layer import LayerDense
 import numpy as np
@@ -18,7 +18,7 @@ To implement: Save and load functions to save and load a model that has been cre
 
 class Model:
     # def forward_and_backward_pass(layers, activations, layer1, activation1, layer2, activation2, data_X, data_y, learning_rate):
-    def forward_and_backward_pass(self, layers, activations, dropouts, data_X, data_y, learning_rate, apply_dropout, training):
+    def forward_and_backward_pass(self, layers, activations, dropouts, data_X, data_y, learning_rate, apply_dropout, training, loss_function_used):
         x = data_X
         
         # Forward pass
@@ -31,7 +31,7 @@ class Model:
                 dropout.forward(x, training)
                 x = dropout.output
         # Calculate the loss
-        loss_function = LossCategoricalCrossentropy()
+        loss_function = loss_function_used
         loss = loss_function.calculate(x, data_y)
 
         # Backward pass
@@ -50,9 +50,14 @@ class Model:
 
         return loss, x
 
-    def train_model(self, layers, activations, dropouts, num_epochs, batch_size, learning_rate, data_X, data_y, training):
+    def train_model(self, layers, activations, dropouts, num_epochs, batch_size, learning_rate, data_X, data_y, training, loss_function_used = None):
+        if loss_function_used == None or loss_function_used == 'CrossEntropy':
+            loss_function_used = LossCategoricalCrossentropy()
+        elif loss_function_used == 'MSE':
+            loss_function_used = LossMeanSquaredError()
+        
         data_size = len(data_X)
-
+        
         # Check if dropout values have been used
         apply_dropout = self.check_for_dropout(dropouts)
 
@@ -65,7 +70,7 @@ class Model:
                 else:
                     batch_X = data_X[i:i+batch_size]
                 batch_y = data_y[i:i+batch_size]
-                batch_loss, batch_predictions = self.forward_and_backward_pass(layers, activations, dropouts, batch_X, batch_y, learning_rate, apply_dropout, training)
+                batch_loss, batch_predictions = self.forward_and_backward_pass(layers, activations, dropouts, batch_X, batch_y, learning_rate, apply_dropout, training, loss_function_used)
                 total_loss += batch_loss
                 all_predictions.append(batch_predictions)
 

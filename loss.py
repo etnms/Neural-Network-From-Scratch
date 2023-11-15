@@ -38,3 +38,25 @@ class LossCategoricalCrossentropy(Loss):
         self.dvalues = dvalues.copy()
         self.dvalues[range(samples), y_true] -= 1
         self.dvalues /= samples
+
+
+class LossMeanSquaredError(Loss):
+    def forward(self, y_pred, y_true):
+        if len(y_true.shape) == 1:
+            # Reshape, first convert to np array
+            y_true = np.array(y_true).reshape(-1, 1)
+
+        # Calculate MSE  
+        sample_losses = np.mean((y_true - y_pred) ** 2, axis=-1) 
+        return sample_losses
+    
+    def backward(self, dvalues, y_true):
+        samples = len(dvalues)
+
+         # Ensure y_true is a column vector
+        if len(y_true.shape) == 1:
+            # Reshape, first convert to np array
+            y_true = np.array(y_true).reshape(-1, 1)
+
+        # Gradient of the mean squared error with respect to the predicted values
+        self.dvalues = -2 * (y_true - dvalues) / samples
