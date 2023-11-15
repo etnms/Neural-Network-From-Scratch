@@ -1,4 +1,5 @@
 from loss import LossCategoricalCrossentropy
+from utils.utils import convert_to_numpy_arrays, convert_to_python_types
 import numpy as np
 import pandas as pd
 import os
@@ -108,19 +109,10 @@ class Model:
             # Remove previous content if any
             output.truncate()
             # Write to json
-            content = json.dumps(model_data, default=self.convert_to_python_types)
+            content = json.dumps(model_data, default=convert_to_python_types)
             output.write(content)
       
-    # Helper function to convert numpy array to JSON
-    def convert_to_python_types(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return obj
-    
-    def convert_to_numpy_arrays(obj):
-        if isinstance(obj, list):
-            return np.array(obj)
-        return obj
+
 
     def load_model(self, name: str):
         # Get current working directory for input file    
@@ -131,8 +123,8 @@ class Model:
         layers = []
         i = 1
         while f'layer{i}_weights' in model_data:
-            weights = self.convert_to_numpy_arrays(model_data[f'layer{i}_weights'])
-            biases = self.convert_to_numpy_arrays(model_data[f'layer{i}_biases'])
+            weights = convert_to_numpy_arrays(model_data[f'layer{i}_weights'])
+            biases = convert_to_numpy_arrays(model_data[f'layer{i}_biases'])
             activation_dict = model_data[f'layer{i}_activations']
 
             # Need to reconstruct layer and activation objects based on the loaded data.
