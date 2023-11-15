@@ -48,7 +48,7 @@ training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_da
 number_classes = 5
 # Hyperparameters
 learning_rate = 0.3
-num_epochs = 10  # Specify the number of training epochs
+num_epochs = 200  # Specify the number of training epochs
 batch_size = 128
 
 # Number of classes = number of inputs
@@ -63,12 +63,14 @@ layer_dense_list = [layer[0] for layer in layers]
 activation_layer_list = [layer[1] for layer in layers]
 dropout_layer_list = [layer[2] for layer in layers]
 
+'''
 model.train_model(layers = layer_dense_list, activations=activation_layer_list, dropouts=dropout_layer_list,
                    batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
                    data_y=training_set_y, training=True)
 
 model.save_model(layers=layers, name='model')
-
+'''
+layer_dense_list = model.load_model('model.json')
 predictions = model.testing_model(layers=layer_dense_list, activations=activation_layer_list, data_X=testing_set_X)
 
 # For binary classification, the prediction is the index of the maximum value in the last layer's output

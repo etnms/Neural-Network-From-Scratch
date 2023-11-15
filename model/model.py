@@ -1,5 +1,6 @@
 from loss import LossCategoricalCrossentropy
 from utils.utils import convert_to_numpy_arrays, convert_to_python_types
+from layer.layer import LayerDense
 import numpy as np
 import pandas as pd
 import os
@@ -74,6 +75,7 @@ class Model:
             # Calculate and print the average loss and accuracy for this epoch
             average_loss = total_loss / (data_size / batch_size)
             accuracy = np.mean(np.argmax(predictions, axis=1) == data_y) # Assuming data_y represents true class labels
+            #if epoch % 100 == 0: # Compute and print loss every 100 epochs
             print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss}, Accuracy: {accuracy}')
 
     def check_for_dropout(self, dropouts):
@@ -117,28 +119,21 @@ class Model:
     def load_model(self, name: str):
         # Get current working directory for input file    
         cwd = os.getcwd()
-        with open(f'{cwd}/{name}.json', mode='r') as input_file:
+        with open(f'{cwd}/{name}', mode='r') as input_file:
             model_data = json.load(input_file)
 
         layers = []
         i = 1
-        while f'layer{i}_weights' in model_data:
+        while f'layer{i}_weights' in model_data:       
             weights = convert_to_numpy_arrays(model_data[f'layer{i}_weights'])
             biases = convert_to_numpy_arrays(model_data[f'layer{i}_biases'])
-            activation_dict = model_data[f'layer{i}_activations']
-
-            # Need to reconstruct layer and activation objects based on the loaded data.
-
-            '''
-            layer = Layer(input_size=weights.shape[0], output_size=weights.shape[1])
+            
+            # Need to reconstruct layers based on the loaded data.
+            layer = LayerDense(n_inputs=weights.shape[0], n_neurons=weights.shape[1])
             layer.weights = weights
             layer.biases = biases
 
-            activation_name = activation_dict.get('name', 'default_activation')
-            #activation = Activation(name=activation_name)
-
-            layers.append((layer, activation))
-            '''
+            layers.append(layer)
             i += 1
-
+    
         return layers
