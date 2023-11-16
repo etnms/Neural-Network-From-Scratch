@@ -7,16 +7,19 @@ import os
 import string
 import json
 
+
 '''
 Model class with train and testing functions. 
 It also has a forward_backward function for the training, while the testing only uses a forward pass as it doesn't require
 to change the model.
 
-To implement: Save and load functions to save and load a model that has been created.
 '''
 
 
 class Model:
+    # Class-level initialization to maintain a single shared state for all instances (there should be only one instance)
+    best_val_loss = float('inf') # first training will always be less than infinity
+    no_improvement_count = 0
     # def forward_and_backward_pass(layers, activations, layer1, activation1, layer2, activation2, data_X, data_y, learning_rate):
     def forward_and_backward_pass(self, layers, activations, dropouts, data_X, data_y, learning_rate, apply_dropout, training, loss_function_used):
         x = data_X
@@ -50,7 +53,11 @@ class Model:
 
         return loss, x
 
-    def train_model(self, layers, activations, dropouts, num_epochs, batch_size, learning_rate, data_X, data_y, training, loss_function_used = None):
+    def train_model(self, layers, activations, dropouts, num_epochs, batch_size, learning_rate, 
+                    data_X, data_y, training, loss_function_used = None,
+                    early_stopping = False,
+                    early_stopping_patience = None):
+        # Select the loss function used
         if loss_function_used == None or loss_function_used == 'CrossEntropy':
             loss_function_used = LossCategoricalCrossentropy()
         elif loss_function_used == 'MSE':
@@ -70,7 +77,8 @@ class Model:
                 else:
                     batch_X = data_X[i:i+batch_size]
                 batch_y = data_y[i:i+batch_size]
-                batch_loss, batch_predictions = self.forward_and_backward_pass(layers, activations, dropouts, batch_X, batch_y, learning_rate, apply_dropout, training, loss_function_used)
+                batch_loss, batch_predictions = self.forward_and_backward_pass(layers, activations, dropouts, batch_X, batch_y, 
+                                                                               learning_rate, apply_dropout, training, loss_function_used)
                 total_loss += batch_loss
                 all_predictions.append(batch_predictions)
 
@@ -82,6 +90,17 @@ class Model:
             accuracy = np.mean(np.argmax(predictions, axis=1) == data_y) # Assuming data_y represents true class labels
             #if epoch % 100 == 0: # Compute and print loss every 100 epochs
             print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss}, Accuracy: {accuracy}')
+
+            if early_stopping:
+                if average_loss < self.best_val_loss:
+                    self.best_val_loss = average_loss
+                    self.no_improvement_count = 0
+                else:
+                    self.no_improvement_count += 1
+
+                if self.no_improvement_count >= early_stopping_patience:
+                    print(f'Early stopping at epoch {epoch + 1} as there is no improvement in validation loss.')
+                    break
 
     def check_for_dropout(self, dropouts):
         if dropouts is None:

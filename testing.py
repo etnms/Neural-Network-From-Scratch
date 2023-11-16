@@ -46,10 +46,13 @@ y = data['Class']
 training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_data(X, y, training_size=0.8)
 
 number_classes = 5
+
 # Hyperparameters
 learning_rate = 0.3
 num_epochs = 200  # Specify the number of training epochs
 batch_size = 128
+early_stopping = True
+early_stopping_patience = 5 # Stop training if validation loss does not improve for 5 consecutive epochs
 
 # Number of classes = number of inputs
 # In case of second layer until the end it takes the number of neurons from the previous layer
@@ -66,7 +69,8 @@ dropout_layer_list = [layer[2] for layer in layers]
 
 model.train_model(layers = layer_dense_list, activations=activation_layer_list, dropouts=dropout_layer_list,
                    batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
-                   data_y=training_set_y, training=True)
+                   data_y=training_set_y, training=True, early_stopping=early_stopping, 
+                   early_stopping_patience=early_stopping_patience)
 
 #model.save_model(layers=layers, name='model')
 
