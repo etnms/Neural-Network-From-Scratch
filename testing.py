@@ -3,10 +3,12 @@ import pandas as pd
 from model.model import Model
 from create_layer import CreateLayer
 from split_training_data import split_training_data
+from random_search import RandomSearch
 
 '''
 File for testing purposes
 '''
+
 
 model = Model()
 
@@ -17,7 +19,7 @@ X = data[['V1', 'V2', 'V3', 'V4', 'V5']]
 y = data['Class']
 
 training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_data(X, y, training_size=0.8)
-
+'''
 number_classes = 5
 
 # Hyperparameters
@@ -26,6 +28,7 @@ num_epochs = 200  # Specify the number of training epochs
 batch_size = 128
 early_stopping = True
 early_stopping_patience = 5 # Stop training if validation loss does not improve for 5 consecutive epochs
+
 
 # Number of classes = number of inputs
 # In case of second layer until the end it takes the number of neurons from the previous layer
@@ -58,3 +61,17 @@ predicted_classes = np.argmax(predictions, axis=1)
 
 accuracy = np.mean(predicted_classes == testing_set_y)
 print(f"Test accuracy: {accuracy}")
+'''
+
+hyperparameter_ranges = {
+        'learning_rate': (0.001, 0.1),
+        #'hidden_layers': (1, 3),
+        'number_epochs': (10, 200),
+        'batch_size': (12, 128)
+        #'neurons_per_layer': (64, 256),
+        #'activation': ['relu', 'sigmoid']
+        }
+
+random_search = RandomSearch(hyperparameter_ranges)
+random_search.random_search(5, 5, training_set_X=training_set_X, training_set_y=training_set_y, 
+              testing_set_X=testing_set_X, testing_set_y=testing_set_y, early_stopping=True, early_stopping_patience=5)

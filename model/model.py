@@ -88,19 +88,19 @@ class Model:
             # Calculate and print the average loss and accuracy for this epoch
             average_loss = total_loss / (data_size / batch_size)
             accuracy = np.mean(np.argmax(predictions, axis=1) == data_y) # Assuming data_y represents true class labels
-            #if epoch % 100 == 0: # Compute and print loss every 100 epochs
-            print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss}, Accuracy: {accuracy}')
+            if epoch % 20 == 0: # Compute and print loss every X epochs
+                print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss}, Accuracy: {accuracy}')
 
-            if early_stopping:
-                if average_loss < self.best_val_loss:
-                    self.best_val_loss = average_loss
-                    self.no_improvement_count = 0
-                else:
-                    self.no_improvement_count += 1
+                if early_stopping:
+                    if average_loss < self.best_val_loss:
+                        self.best_val_loss = average_loss
+                        self.no_improvement_count = 0
+                    else:
+                        self.no_improvement_count += 1
 
-                if self.no_improvement_count >= early_stopping_patience:
-                    print(f'Early stopping at epoch {epoch + 1} as there is no improvement in validation loss.')
-                    break
+                    if self.no_improvement_count >= early_stopping_patience:
+                        print(f'Early stopping at epoch {epoch + 1} as there is no improvement in validation loss.')
+                        break
 
     def check_for_dropout(self, dropouts):
         if dropouts is None:
