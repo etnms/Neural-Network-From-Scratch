@@ -1,35 +1,35 @@
-from math import sqrt
-from numpy import mean
-from numpy.random import rand, randn
+import numpy as np
 
 # Xavier weight initialization
 # Is used with Tanh, Sigmoid, or Softmax (is often the default initialization method)
 def xavier_initialization(n_inputs, n_neurons): #input from previous layer
     # calculate the range for the weights
-    lower, upper = -(1.0 / sqrt(n_inputs)), (1.0 / sqrt(n_inputs))
+    lower, upper = -(1.0 / np.sqrt(n_inputs)), (1.0 / np.sqrt(n_inputs))
     # generate random numbers
-    numbers = randn(n_inputs, n_neurons)
+    numbers = np.random.randn(n_inputs, n_neurons)
     # scale to the desired range
     scaled = lower + numbers * (upper - lower)
     return scaled
 
 
 # Normalized xavier initialization 
-def normalized_xavier_initialization(n_neurons, num_neurons_next_layer):
+def normalized_xavier_initialization(n_inputs, n_neurons):
     # calculate the range for the weights
-    lower, upper = -(sqrt(6.0) / sqrt(n_neurons + num_neurons_next_layer)), (sqrt(6.0) / sqrt(n_neurons + num_neurons_next_layer))
+    lower, upper = -(np.sqrt(6.0) / np.sqrt(n_inputs + n_neurons)), (np.sqrt(6.0) / np.sqrt(n_inputs + n_neurons))
     # generate random numbers
-    numbers = rand(1000)
+    numbers = np.random.rand(n_inputs, n_neurons)
     # scale to the desired range
     scaled = lower + numbers * (upper - lower)
+    return scaled
 
 
 # He weight initialization
 # Is used with relu
-def he_initialization(n_neurons):
+def he_initialization(n_inputs, n_neurons):
     # calculate the range for the weights
-    std = sqrt(2.0 / n_neurons)
+    std = np.sqrt(2.0 / n_inputs)
     # generate random numbers
-    numbers = randn(1000)
+    numbers = np.random.randn(n_inputs, n_neurons)
     # scale to the desired range
     scaled = numbers * std
+    return scaled

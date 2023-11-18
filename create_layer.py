@@ -6,7 +6,7 @@ from dropout import dropout
 class CreateLayer:
     def create(number_classes: int, number_neurons: int, activation_function: string, dropout_rate: float = None):
         # Create layer
-        layer_dense = layer.LayerDense(number_classes, number_neurons)
+        layer_dense = layer.LayerDense(number_classes, number_neurons, activation_function)
 
         # Create activation function
         match activation_function:
