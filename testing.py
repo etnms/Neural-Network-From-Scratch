@@ -5,43 +5,16 @@ from create_layer import CreateLayer
 from split_training_data import split_training_data
 
 '''
-This class is messy at the moment for testing purposes (but this needs to be cleaned a bit at one point)
+File for testing purposes
 '''
 
 model = Model()
 
-
-#data = pd.read_csv('./dataset/random_int.csv', encoding='utf-8', dtype = str)  
 data = pd.read_csv('./dataset/phonemes.csv', encoding='utf-8')  
-
-# Remove invalid rows
-#data = data.dropna(subset=['String'])
-# Shuffle the data if sample not shuffled already
-#data = data.sample(frac=1).reset_index(drop=True)
-
-#data = data[pd.to_numeric(data['Int_value'], errors='coerce').notna()]
-#data['Int_value'] = pd.to_numeric(data['Int_value'])
-
-#tokenizer, tokenized_sentences = text_processing.create_tokenizer(data['String'])
-
-#clean_token_data = data_conversion.token_to_int(tokenized_sentences)
-#data['test'] = clean_token_data
-
-#data['string_value_stand'] = data_conversion.standardization(data, 'test')
-
-#data['length'] = data['String'].apply(len)
-#data['alpha'] = data['String'].str.isalpha().astype(int)
-#data['numeric'] = data['String'].str.isnumeric().astype(int)
-
-#X = data['string_value_stand']
 
 X = data[['V1', 'V2', 'V3', 'V4', 'V5']]
 
-#abel_mapping = {'1': 0, '2': 1}
-
-#y = data['Class'].map(label_mapping).astype(int)
 y = data['Class']
-#X, y = generate_spiral_set.create_data(100, 3)
 
 training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_data(X, y, training_size=0.8)
 
@@ -72,8 +45,10 @@ model.train_model(layers = layer_dense_list, activations=activation_layer_list, 
                    data_y=training_set_y, training=True, early_stopping=early_stopping, 
                    early_stopping_patience=early_stopping_patience)
 
+# Save model
 #model.save_model(layers=layers, name='model')
 
+# Load model
 #layer_dense_list = model.load_model('model.json')
 predictions = model.testing_model(layers=layer_dense_list, activations=activation_layer_list, data_X=testing_set_X)
 

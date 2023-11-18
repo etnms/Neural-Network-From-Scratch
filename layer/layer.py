@@ -15,10 +15,8 @@ class LayerDense:
         # self.weights = 0.1 * np.random.randn(n_inputs, n_neurons) # Default initialization
         # Weight initialization with correspond method
         if activation_function == 'relu':
-            print('he')
             self.weights = he_initialization(n_inputs, n_neurons)
         else:
-            print('xavier')
             self.weights = xavier_initialization(n_inputs, n_neurons)
         self.biases = np.zeros((1, n_neurons))
 
