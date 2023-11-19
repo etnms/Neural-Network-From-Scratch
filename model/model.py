@@ -24,6 +24,7 @@ class Model:
     def forward_and_backward_pass(self, layers, activations, dropouts, data_X, data_y, learning_rate, apply_dropout, training, loss_function_used):
         x = data_X
         
+        model_parameters = [{'weights': layer.weights, 'biases': layer.biases} for layer in layers]
         # Forward pass
         for layer, activation, dropout in zip(layers, activations, dropouts):
             layer.forward(x)
@@ -35,6 +36,8 @@ class Model:
                 x = dropout.output
         # Calculate the loss
         loss_function = loss_function_used
+
+        loss_function.set_params(params = model_parameters)
         loss = loss_function.calculate(x, data_y)
 
         # Backward pass

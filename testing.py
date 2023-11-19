@@ -19,7 +19,7 @@ X = data[['V1', 'V2', 'V3', 'V4', 'V5']]
 y = data['Class']
 
 training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_data(X, y, training_size=0.8)
-'''
+
 number_classes = 5
 
 # Hyperparameters
@@ -61,8 +61,8 @@ predicted_classes = np.argmax(predictions, axis=1)
 
 accuracy = np.mean(predicted_classes == testing_set_y)
 print(f"Test accuracy: {accuracy}")
-'''
 
+'''
 hyperparameter_ranges = {
         'learning_rate': (0.001, 0.1),
         #'hidden_layers': (1, 3),
@@ -75,3 +75,4 @@ hyperparameter_ranges = {
 random_search = RandomSearch(hyperparameter_ranges)
 random_search.random_search(5, 5, training_set_X=training_set_X, training_set_y=training_set_y, 
               testing_set_X=testing_set_X, testing_set_y=testing_set_y, early_stopping=True, early_stopping_patience=5)
+              '''
