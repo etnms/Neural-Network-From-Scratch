@@ -24,8 +24,8 @@ number_classes = 5
 
 # Hyperparameters
 learning_rate = 0.3
-num_epochs = 200  # Specify the number of training epochs
 batch_size = 128
+num_epochs = 200  # Specify the number of training epochs
 early_stopping = True
 early_stopping_patience = 5 # Stop training if validation loss does not improve for 5 consecutive epochs
 

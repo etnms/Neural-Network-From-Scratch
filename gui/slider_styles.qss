@@ -1,0 +1,31 @@
+QSlider::groove:horizontal {
+    border: 1px solid #bbb;
+    background: white;
+    height: 10px;
+    border-radius: 5px;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+    stop:0 #eee, stop:1 #ccc);
+    border: 1px solid #777;
+    width: 18px;
+    margin-top: -4px;
+    margin-bottom: -4px;
+    border-radius: 9px;
+}
+
+QSlider::handle:horizontal:hover {
+    background: #000
+}
+
+QLabel {
+    color: #fff;
+    font-size: 18px;
+}
+
+QLineEdit {
+    color: #fff;
+    font-size: 18px;
+    padding: 5px;
+}
