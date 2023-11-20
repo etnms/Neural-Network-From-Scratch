@@ -21,7 +21,7 @@ class Model:
     best_val_loss = float('inf') # first training will always be less than infinity
     no_improvement_count = 0
     # def forward_and_backward_pass(layers, activations, layer1, activation1, layer2, activation2, data_X, data_y, learning_rate):
-    def forward_and_backward_pass(self, layers, activations, dropouts, data_X, data_y, learning_rate, apply_dropout, training, loss_function_used):
+    def forward_and_backward_pass(self, layers, activations, dropouts, data_X, data_y, learning_rate, apply_dropout, training, loss_function_used, regularization):
         x = data_X
         
         model_parameters = [{'weights': layer.weights, 'biases': layer.biases} for layer in layers]
@@ -38,10 +38,10 @@ class Model:
         loss_function = loss_function_used
 
         loss_function.set_params(params = model_parameters)
-        loss = loss_function.calculate(x, data_y)
+        loss = loss_function.calculate(x, data_y, regularization)
 
         # Backward pass
-        loss_function.backward(x, data_y) #activations[-1].output = x, could be used as well since starting from last
+        loss_function.backward(x, data_y, regularization) #activations[-1].output = x, could be used as well since starting from last
         dvalues = loss_function.dvalues
 
         for layer, activation in zip(reversed(layers), reversed(activations)):
@@ -59,7 +59,7 @@ class Model:
     def train_model(self, layers, activations, dropouts, num_epochs, batch_size, learning_rate, 
                     data_X, data_y, training, loss_function_used = None,
                     early_stopping = False,
-                    early_stopping_patience = None):
+                    early_stopping_patience = None, regularization = None):
         # Select the loss function used
         if loss_function_used == None or loss_function_used == 'CrossEntropy':
             loss_function_used = LossCategoricalCrossentropy()
@@ -81,7 +81,7 @@ class Model:
                     batch_X = data_X[i:i+batch_size]
                 batch_y = data_y[i:i+batch_size]
                 batch_loss, batch_predictions = self.forward_and_backward_pass(layers, activations, dropouts, batch_X, batch_y, 
-                                                                               learning_rate, apply_dropout, training, loss_function_used)
+                                                                               learning_rate, apply_dropout, training, loss_function_used, regularization)
                 total_loss += batch_loss
                 all_predictions.append(batch_predictions)
 
