@@ -20,3 +20,4 @@ The network can read and learn with .csv files.
 - Python
 - Numpy
 - Pandas
+- PyQt6 (GUI interface)

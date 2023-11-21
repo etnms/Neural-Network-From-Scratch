@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(button_frame)
         button_frame_layout = QVBoxLayout(button_frame)
         # Create a QPushButton to trigger the function
-        self.btn = QPushButton('Run Function', self)
+        self.btn = QPushButton('Train model', self)
         self.btn.setStyleSheet('background-color: #489BE8; color: #000; border-radius: 10px; padding: 10px;')
         self.btn.clicked.connect(self.runFunction)
         
