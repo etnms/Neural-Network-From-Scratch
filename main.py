@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QSize
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTextEdit, QPushButton, QLabel
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTextEdit, QPushButton, QLabel, QFrame
 from PyQt6.QtGui import QTextCursor
 from gui.round_toggle_switch import CustomRoundToggleSwitch
 from gui.modular_slider import ModularSlider
@@ -15,29 +15,35 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Neural Network Training')
         self.setMinimumSize(QSize(500, 500))
         self.setStyleSheet('background-color: #282b30')
+        
+        parameters_layout = QVBoxLayout()
 
-
-         # Create instances of ModularSlider with different values
+        # Create instances of ModularSlider with different values
         slider1 = ModularSlider('Learning rate', 0, 1000, float)
-        layout.addWidget(slider1)
+        parameters_layout.addWidget(slider1)
 
         slider2 = ModularSlider('Batch size', 0, 1024, int)
-        layout.addWidget(slider2)
+        parameters_layout.addWidget(slider2)
 
         slider3 = ModularSlider('Number of epochs', 0, 1000, int)
-        layout.addWidget(slider3)
+        parameters_layout.addWidget(slider3)
 
+        # Toggle switch (checkbok)
         label_early_stopping = QLabel('Early stopping')
         label_early_stopping.setStyleSheet('color: #fff; font-size: 18px')
-        layout.addWidget(label_early_stopping)
+        parameters_layout.addWidget(label_early_stopping)
+
+        # Actual checkbox with styling
         custom_round_toggle_switch = CustomRoundToggleSwitch('Early stopping toggle')
-        layout.addWidget(custom_round_toggle_switch)
+        parameters_layout.addWidget(custom_round_toggle_switch)
 
         slider4 = ModularSlider('Early stopping patience', 0, 10, int)
-        layout.addWidget(slider4)
+        parameters_layout.addWidget(slider4)
 
+        parameters_layout.setContentsMargins(200,20,200,20)    
+        layout.addLayout(parameters_layout)
 
-        self.setCentralWidget(central_widget)
+        
 
         # Create a QTextEdit widget for displaying text
         self.text_edit = QTextEdit(self)
@@ -45,11 +51,20 @@ class MainWindow(QMainWindow):
         self.text_edit.setReadOnly(True)  # Set read-only mode
         layout.addWidget(self.text_edit)
 
+        # Create frame for buttom
+        button_frame = QFrame(self)
+        layout.addWidget(button_frame)
+        button_frame_layout = QVBoxLayout(button_frame)
         # Create a QPushButton to trigger the function
         self.btn = QPushButton('Run Function', self)
         self.btn.setStyleSheet('background-color: #489BE8; color: #000; border-radius: 10px; padding: 10px;')
         self.btn.clicked.connect(self.runFunction)
-        layout.addWidget(self.btn)
+        
+        button_frame_layout.addWidget(self.btn)
+        button_frame_layout.setContentsMargins(500, 10, 500, 10)
+
+        self.setCentralWidget(central_widget)
+
 
     def runFunction(self):
         # Example function that adds text to the QTextEdit widget

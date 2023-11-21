@@ -24,10 +24,10 @@ class ModularSlider(QWidget):
         self.slider.setMaximum(max_value)
         self.slider.setSingleStep(1)
 
-        self.label = QLabel(f'{name} Value: 0')
+        self.label = QLabel(f'{name} : 0')
         layout.addWidget(self.label)
 
-        self.slider.valueChanged.connect(lambda value: self.update_value_label(value))
+        self.slider.valueChanged.connect(lambda value: self.update_value_label(value, value_type))
 
         layout.addWidget(self.slider)
 
@@ -62,6 +62,7 @@ class ModularSlider(QWidget):
             # Handle the case where the input is not a valid float or int
             pass
        
-    def update_value_label(self, value):
-        value = value / 1000
+    def update_value_label(self, value, value_type):
+        if value_type == float:
+            value = value / 1000
         self.label.setText(f'{self.label.text().split(":")[0]}: {value}')
