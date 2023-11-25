@@ -17,18 +17,20 @@ to change the model.
 
 
 class Model:
-    def __init__(self):
-
+    def __init__(self, layers, activations, dropouts):
+        self.layers = layers
+        self.activations = activations
+        self.dropouts = dropouts
         self.best_val_loss = float('inf') # first training will always be less than infinity
         self.no_improvement_count = 0
 
     # def forward_and_backward_pass(layers, activations, layer1, activation1, layer2, activation2, data_X, data_y, learning_rate):
-    def forward_and_backward_pass(self, layers, activations, dropouts, data_X, data_y, learning_rate, apply_dropout, training, loss_function_used, regularization):
+    def forward_and_backward_pass(self, data_X, data_y, learning_rate, apply_dropout, training, loss_function_used, regularization):
         x = data_X
         
-        model_parameters = [{'weights': layer.weights, 'biases': layer.biases} for layer in layers]
+        model_parameters = [{'weights': layer.weights, 'biases': layer.biases} for layer in self.layers]
         # Forward pass
-        for layer, activation, dropout in zip(layers, activations, dropouts):
+        for layer, activation, dropout in zip(self.layers, self.activations, self.dropouts):
             layer.forward(x)
             activation.forward(layer.output)
             x = activation.output
@@ -46,19 +48,19 @@ class Model:
         loss_function.backward(x, data_y, regularization) #activations[-1].output = x, could be used as well since starting from last
         dvalues = loss_function.dvalues
 
-        for layer, activation in zip(reversed(layers), reversed(activations)):
+        for layer, activation in zip(reversed(self.layers), reversed(self.activations)):
             activation.backward(dvalues)
             layer.backward(activation.dvalues)
             dvalues = layer.dvalues
 
         # Optimization step
-        for layer in layers:
+        for layer in self.layers:
             layer.weights -= learning_rate * layer.dweights
             layer.biases -= learning_rate * layer.dbiases
 
         return loss, x
 
-    def train_model(self, layers, activations, dropouts, num_epochs, batch_size, learning_rate, 
+    def train_model(self, num_epochs, batch_size, learning_rate, 
                     data_X, data_y, training, loss_function_used = None,
                     early_stopping = False,
                     early_stopping_patience = None, regularization = None):
@@ -71,7 +73,7 @@ class Model:
         data_size = len(data_X)
         
         # Check if dropout values have been used
-        apply_dropout = self.check_for_dropout(dropouts)
+        apply_dropout = self.check_for_dropout(self.dropouts)
 
         for epoch in range(num_epochs):
             total_loss = 0
@@ -82,7 +84,7 @@ class Model:
                 else:
                     batch_X = data_X[i:i+batch_size]
                 batch_y = data_y[i:i+batch_size]
-                batch_loss, batch_predictions = self.forward_and_backward_pass(layers, activations, dropouts, batch_X, batch_y, 
+                batch_loss, batch_predictions = self.forward_and_backward_pass(batch_X, batch_y, 
                                                                                learning_rate, apply_dropout, training, loss_function_used, regularization)
                 total_loss += batch_loss
                 all_predictions.append(batch_predictions)
@@ -113,11 +115,11 @@ class Model:
         else:
             return True
 
-    def testing_model(self, layers, activations, data_X):
+    def testing_model(self, data_X):
         x = data_X
 
         # Forward pass only for testig. We are not trying to update the model but simply test its acuracy
-        for layer, activation in zip(layers, activations):
+        for layer, activation in zip(self.layers, self.activations):
             layer.forward(x)
             activation.forward(layer.output)
             x = activation.output

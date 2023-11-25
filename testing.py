@@ -10,7 +10,7 @@ File for testing purposes
 '''
 
 
-model = Model()
+
 
 data = pd.read_csv('./dataset/phonemes.csv', encoding='utf-8')  
 
@@ -45,8 +45,9 @@ activation_layer_list = [layer[1] for layer in layers]
 dropout_layer_list = [layer[2] for layer in layers]
 
 
-model.train_model(layers = layer_dense_list, activations=activation_layer_list, dropouts=dropout_layer_list,
-                   batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
+model = Model(layers=layer_dense_list, activations=activation_layer_list, dropouts=dropout_layer_list)
+
+model.train_model( batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
                    data_y=training_set_y, training=True, early_stopping=early_stopping, 
                    early_stopping_patience=early_stopping_patience, regularization='l1')
 
@@ -55,7 +56,7 @@ model.train_model(layers = layer_dense_list, activations=activation_layer_list, 
 
 # Load model
 #layer_dense_list = model.load_model('model.json')
-predictions = model.testing_model(layers=layer_dense_list, activations=activation_layer_list, data_X=testing_set_X)
+predictions = model.testing_model(data_X=testing_set_X)
 
 # For binary classification, the prediction is the index of the maximum value in the last layer's output
     # /!\ need to have something for more than binary classification
