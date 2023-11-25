@@ -40,19 +40,17 @@ layer2 = CreateLayer.create(number_classes=32, number_neurons=16, activation_fun
 layer3 = CreateLayer.create(number_classes=16, number_neurons=5, activation_function='softmax')
 layers=[layer1, layer2, layer3]
 
-layer_dense_list = [layer[0] for layer in layers]
-activation_layer_list = [layer[1] for layer in layers]
-dropout_layer_list = [layer[2] for layer in layers]
 
 
-model = Model(layers=layer_dense_list, activations=activation_layer_list, dropouts=dropout_layer_list)
+
+model = Model(layers=layers)
 
 model.train_model(batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
                   data_y=training_set_y, training=True, early_stopping=early_stopping, 
                   early_stopping_patience=early_stopping_patience, regularization='l1')
 
 # Save model
-#model.save_model(layers=layers, name='model')
+model.save_model(layers=layers, name='model')
 
 # Load model
 #layer_dense_list = model.load_model('model.json')

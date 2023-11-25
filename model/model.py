@@ -17,20 +17,25 @@ to change the model.
 
 
 class Model:
-    def __init__(self, layers, activations, dropouts):
+    def __init__(self, layers):
         self.layers = layers
-        self.activations = activations
-        self.dropouts = dropouts
         self.best_val_loss = float('inf') # first training will always be less than infinity
         self.no_improvement_count = 0
+
+        # Layer element lists
+        self.layer_dense_list = [layer[0] for layer in self.layers]
+        self.activation_layer_list = [layer[1] for layer in self.layers]
+        self.dropout_layer_list = [layer[2] for layer in self.layers]
 
     # def forward_and_backward_pass(layers, activations, layer1, activation1, layer2, activation2, data_X, data_y, learning_rate):
     def forward_and_backward_pass(self, data_X, data_y, learning_rate, apply_dropout, training, loss_function_used, regularization):
         x = data_X
         
-        model_parameters = [{'weights': layer.weights, 'biases': layer.biases} for layer in self.layers]
+
+
+        model_parameters = [{'weights': layer.weights, 'biases': layer.biases} for layer in self.layer_dense_list]
         # Forward pass
-        for layer, activation, dropout in zip(self.layers, self.activations, self.dropouts):
+        for layer, activation, dropout in zip(self.layer_dense_list, self.activation_layer_list, self.dropout_layer_list):
             layer.forward(x)
             activation.forward(layer.output)
             x = activation.output
@@ -48,13 +53,13 @@ class Model:
         loss_function.backward(x, data_y, regularization) #activations[-1].output = x, could be used as well since starting from last
         dvalues = loss_function.dvalues
 
-        for layer, activation in zip(reversed(self.layers), reversed(self.activations)):
+        for layer, activation in zip(reversed(self.layer_dense_list), reversed(self.activation_layer_list)):
             activation.backward(dvalues)
             layer.backward(activation.dvalues)
             dvalues = layer.dvalues
 
         # Optimization step
-        for layer in self.layers:
+        for layer in self.layer_dense_list:
             layer.weights -= learning_rate * layer.dweights
             layer.biases -= learning_rate * layer.dbiases
 
@@ -64,6 +69,10 @@ class Model:
                     data_X, data_y, training, loss_function_used = None,
                     early_stopping = False,
                     early_stopping_patience = None, regularization = None):
+        
+        # Default best accuracy for early stopping (saving best parameters in case of stopping)
+        self.prev_best_accuracy = 0
+
         # Select the loss function used
         if loss_function_used == None or loss_function_used == 'CrossEntropy':
             loss_function_used = LossCategoricalCrossentropy()
@@ -73,7 +82,7 @@ class Model:
         data_size = len(data_X)
         
         # Check if dropout values have been used
-        apply_dropout = self.check_for_dropout(self.dropouts)
+        apply_dropout = self.check_for_dropout(self.dropout_layer_list)
 
         for epoch in range(num_epochs):
             total_loss = 0
@@ -105,6 +114,11 @@ class Model:
                     else:
                         self.no_improvement_count += 1
 
+                    # Early stopping saving best model. Check for acuracy, if higher then update which parameters are good
+                    if accuracy > self.prev_best_accuracy:
+                        self.prev_best_accuracy = accuracy
+                        self.save_model(self.layers, '/early_stopping_outputs/best_early_stopping')
+
                     if self.no_improvement_count >= early_stopping_patience:
                         print(f'Early stopping at epoch {epoch + 1} as there is no improvement in validation loss.')
                         break
@@ -118,8 +132,8 @@ class Model:
     def testing_model(self, data_X):
         x = data_X
 
-        # Forward pass only for testig. We are not trying to update the model but simply test its acuracy
-        for layer, activation in zip(self.layers, self.activations):
+        # Forward pass only for testing the model. We are not trying to update the model but simply test its acuracy
+        for layer, activation in zip(self.layer_dense_list, self.activation_layer_list):
             layer.forward(x)
             activation.forward(layer.output)
             x = activation.output

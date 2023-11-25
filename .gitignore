@@ -5,6 +5,8 @@ __pycache__
 # Default name for output when writing to json (Save function)
 model.json
 
+# Early stopping saving of the best model (save in dedicated folder)
+early_stopping_outputs
 
 # Windows script to start the virtual environment
 start_venv.bat
