@@ -4,7 +4,7 @@ from model.model import Model
 from create_layer import CreateLayer
 from split_training_data import split_training_data
 from random_search import RandomSearch
-
+from dataset import generate_spiral_set
 '''
 File for testing purposes
 '''
@@ -18,9 +18,11 @@ X = data[['V1', 'V2', 'V3', 'V4', 'V5']]
 
 y = data['Class']
 
+X#, y = generate_spiral_set.create_data(100, 3)
 training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_data(X, y, training_size=0.8)
 
 number_classes = 5
+#number_classes = 2
 
 # Hyperparameters
 learning_rate = 0.3

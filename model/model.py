@@ -17,9 +17,11 @@ to change the model.
 
 
 class Model:
-    # Class-level initialization to maintain a single shared state for all instances (there should be only one instance)
-    best_val_loss = float('inf') # first training will always be less than infinity
-    no_improvement_count = 0
+    def __init__(self):
+
+        self.best_val_loss = float('inf') # first training will always be less than infinity
+        self.no_improvement_count = 0
+
     # def forward_and_backward_pass(layers, activations, layer1, activation1, layer2, activation2, data_X, data_y, learning_rate):
     def forward_and_backward_pass(self, layers, activations, dropouts, data_X, data_y, learning_rate, apply_dropout, training, loss_function_used, regularization):
         x = data_X
