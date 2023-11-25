@@ -84,8 +84,8 @@ class Model:
                 else:
                     batch_X = data_X[i:i+batch_size]
                 batch_y = data_y[i:i+batch_size]
-                batch_loss, batch_predictions = self.forward_and_backward_pass(batch_X, batch_y, 
-                                                                               learning_rate, apply_dropout, training, loss_function_used, regularization)
+                batch_loss, batch_predictions = self.forward_and_backward_pass(batch_X, batch_y, learning_rate, apply_dropout, 
+                                                                               training, loss_function_used, regularization)
                 total_loss += batch_loss
                 all_predictions.append(batch_predictions)
 
