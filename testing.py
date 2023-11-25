@@ -47,9 +47,9 @@ dropout_layer_list = [layer[2] for layer in layers]
 
 model = Model(layers=layer_dense_list, activations=activation_layer_list, dropouts=dropout_layer_list)
 
-model.train_model( batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
-                   data_y=training_set_y, training=True, early_stopping=early_stopping, 
-                   early_stopping_patience=early_stopping_patience, regularization='l1')
+model.train_model(batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
+                  data_y=training_set_y, training=True, early_stopping=early_stopping, 
+                  early_stopping_patience=early_stopping_patience, regularization='l1')
 
 # Save model
 #model.save_model(layers=layers, name='model')

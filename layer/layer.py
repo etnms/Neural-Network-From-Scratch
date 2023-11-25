@@ -11,14 +11,19 @@ To do: Need to change np.zeros to random values
 
 
 class LayerDense:
-    def __init__(self, n_inputs, n_neurons, activation_function):
+    def __init__(self, n_inputs, n_neurons, activation_function, random_bias = False):
         # self.weights = 0.1 * np.random.randn(n_inputs, n_neurons) # Default initialization
         # Weight initialization with correspond method
         if activation_function == 'relu':
             self.weights = he_initialization(n_inputs, n_neurons)
         else:
             self.weights = xavier_initialization(n_inputs, n_neurons)
-        self.biases = np.zeros((1, n_neurons))
+        
+        # Decide if bias is only 0 or initialized to random values
+        if random_bias:
+            self.biases = np.random.rand(1, n_neurons)
+        else:
+            self.biases = np.zeros((1, n_neurons))
 
     def forward(self, inputs):
         # Check for pandas data type, convert to numpy if data is Series or DataFrame
