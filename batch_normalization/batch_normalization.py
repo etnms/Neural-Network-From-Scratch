@@ -7,13 +7,15 @@ Batch normalization class. Implements batch normalization (should be apply befor
 
 
 class BatchNormalization:
-    def __init__(self, input_size, momentum=0.9, epsilon=1e-5):
-        self.gamma = np.ones((1, input_size))  # scale parameter
-        self.beta = np.zeros((1, input_size))  # shift parameter
+    def __init__(self, n_neurons, momentum=0.9, epsilon=1e-5): #n_neurons not n_inputs
+        self.gamma = np.ones((1, n_neurons))  # scale parameter
+        self.beta = np.zeros((1, n_neurons))  # shift parameter
+
         self.momentum = momentum
         self.epsilon = epsilon
-        self.running_mean = None
-        self.running_variance = None
+        self.running_mean = np.zeros((1, int(n_neurons)))
+        self.running_variance = np.ones((1, int(n_neurons)))
+
 
     def forward(self, inputs, training=True):
         if training:
@@ -25,6 +27,9 @@ class BatchNormalization:
             self.normalized_input = (inputs - mean) / np.sqrt(variance + self.epsilon)
 
             # Scale and shift
+            print("Gamma shape:", self.gamma.shape)
+            print("Beta shape:", self.beta.shape)
+            print("Normalized input shape:", self.normalized_input.shape)
             outputs = self.gamma * self.normalized_input + self.beta
 
             # Update running mean and variance
@@ -32,12 +37,13 @@ class BatchNormalization:
             self.running_variance = self.momentum * self.running_variance + (1 - self.momentum) * variance
         else:
             # Use running mean and variance during inference
-            normalized_input = (inputs - self.running_mean) / np.sqrt(self.running_variance + self.epsilon)
-            outputs = self.gamma * normalized_input + self.beta
+            self.normalized_input = (inputs - self.running_mean) / np.sqrt(self.running_variance + self.epsilon)
+            outputs = self.gamma * self.normalized_input + self.beta
 
         return outputs
 
     def backward(self, dvalues):
+
         # Gradients for gamma and beta
         self.dgamma = np.sum(dvalues * self.normalized_input, axis=0, keepdims=True)
         self.dbeta = np.sum(dvalues, axis=0, keepdims=True)

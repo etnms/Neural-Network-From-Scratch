@@ -5,6 +5,7 @@ class Dropout:
         self.rate = rate
         self.mask = None
         self.output = None
+        
     # Training needs to be set to false when testing the model (true for training purposes)
     def forward(self, inputs, training):
         if training:
