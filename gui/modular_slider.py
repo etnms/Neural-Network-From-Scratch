@@ -6,8 +6,7 @@ import os
 class ModularSlider(QWidget):
     def __init__(self, name, min_value, max_value, value_type=float, parent=None):
         super().__init__(parent)
-
-
+        self.value = 0
         # Set the current working directory to the script's directory
         script_dir = os.path.dirname(os.path.realpath(__file__))
         os.chdir(script_dir)
@@ -28,7 +27,7 @@ class ModularSlider(QWidget):
         layout.addWidget(self.label)
 
         self.slider.valueChanged.connect(lambda value: self.update_value_label(value, value_type))
-
+        
         layout.addWidget(self.slider)
 
         self.input_box = QLineEdit(self)
@@ -48,15 +47,17 @@ class ModularSlider(QWidget):
             if self.value_type == float:
                 value = float(input_value)
                 normalized_value = min(max(0.0, value), 1.0) # Ensure the value is between 0 and 1
+                self.value = normalized_value
                 slider_value = int(normalized_value * self.slider.maximum())
             elif self.value_type == int:
                 slider_value = int(input_value)
                 slider_value = max(self.slider.minimum(), min(slider_value, self.slider.maximum()))
+                self.value = slider_value
             else:
                 return  # Unsupported value_type, do nothing
 
             self.slider.setValue(slider_value)
-            self.label.setText(f'{self.label.text().split(":")[0]}: {slider_value}')
+            self.label.setText(f'{self.label.text().split(":")[0]}: {self.value}')
         
         except ValueError:
             # Handle the case where the input is not a valid float or int
@@ -65,4 +66,5 @@ class ModularSlider(QWidget):
     def update_value_label(self, value, value_type):
         if value_type == float:
             value = value / 1000
+        self.value = value
         self.label.setText(f'{self.label.text().split(":")[0]}: {value}')

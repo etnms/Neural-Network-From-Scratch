@@ -41,39 +41,39 @@ layer3 = CreateLayer.create(number_classes=16, number_neurons=5, activation_func
 layers=[layer1, layer2, layer3]
 
 
+if __name__ == "__main__":
+    model = Model(layers=layers)
+    model.gui = True
+    model.train_model(batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
+                    data_y=training_set_y, training=True, early_stopping=early_stopping, 
+                    early_stopping_patience=early_stopping_patience, regularization='l1')
 
+    # Save model
+    model.save_model(layers=layers, name='model')
 
-model = Model(layers=layers)
+    # Load model
+    #layer_dense_list = model.load_model('model.json')
+    predictions = model.testing_model(data_X=testing_set_X)
 
-model.train_model(batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
-                  data_y=training_set_y, training=True, early_stopping=early_stopping, 
-                  early_stopping_patience=early_stopping_patience, regularization='l1')
+    # For binary classification, the prediction is the index of the maximum value in the last layer's output
+        # /!\ need to have something for more than binary classification
+    predicted_classes = np.argmax(predictions, axis=1)
 
-# Save model
-model.save_model(layers=layers, name='model')
+    accuracy = np.mean(predicted_classes == testing_set_y)
+    print(f"Test accuracy: {accuracy}")
 
-# Load model
-#layer_dense_list = model.load_model('model.json')
-predictions = model.testing_model(data_X=testing_set_X)
+    '''
+    hyperparameter_ranges = {
+            'learning_rate': (0.001, 0.1),
+            #'hidden_layers': (1, 3),
+            'number_epochs': (10, 200),
+            'batch_size': (12, 128)
+            #'neurons_per_layer': (64, 256),
+            #'activation': ['relu', 'sigmoid']
+            }
 
-# For binary classification, the prediction is the index of the maximum value in the last layer's output
-    # /!\ need to have something for more than binary classification
-predicted_classes = np.argmax(predictions, axis=1)
+    random_search = RandomSearch(hyperparameter_ranges)
+    random_search.random_search(5, 5, training_set_X=training_set_X, training_set_y=training_set_y, 
+                testing_set_X=testing_set_X, testing_set_y=testing_set_y, early_stopping=True, early_stopping_patience=5)
+                '''
 
-accuracy = np.mean(predicted_classes == testing_set_y)
-print(f"Test accuracy: {accuracy}")
-
-'''
-hyperparameter_ranges = {
-        'learning_rate': (0.001, 0.1),
-        #'hidden_layers': (1, 3),
-        'number_epochs': (10, 200),
-        'batch_size': (12, 128)
-        #'neurons_per_layer': (64, 256),
-        #'activation': ['relu', 'sigmoid']
-        }
-
-random_search = RandomSearch(hyperparameter_ranges)
-random_search.random_search(5, 5, training_set_X=training_set_X, training_set_y=training_set_y, 
-              testing_set_X=testing_set_X, testing_set_y=testing_set_y, early_stopping=True, early_stopping_patience=5)
-              '''

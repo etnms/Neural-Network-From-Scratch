@@ -6,7 +6,8 @@ import pandas as pd
 import os
 import string
 import json
-
+import sys
+from PyQt6.QtWidgets import QApplication
 
 '''
 Model class with train and testing functions. 
@@ -17,7 +18,7 @@ to change the model.
 
 
 class Model:
-    def __init__(self, layers):
+    def __init__(self, layers,update_text_callback=None):
         self.layers = layers
         self.best_val_loss = float('inf') # first training will always be less than infinity
         self.no_improvement_count = 0
@@ -26,6 +27,9 @@ class Model:
         self.layer_dense_list = [layer[0] for layer in self.layers]
         self.activation_layer_list = [layer[1] for layer in self.layers]
         self.dropout_layer_list = [layer[2] for layer in self.layers]
+
+        # ONLY for GUI logic
+        self.update_text_callback= update_text_callback
 
     # def forward_and_backward_pass(layers, activations, layer1, activation1, layer2, activation2, data_X, data_y, learning_rate):
     def forward_and_backward_pass(self, data_X, data_y, learning_rate, apply_dropout, training, loss_function_used, regularization):
@@ -103,7 +107,11 @@ class Model:
             average_loss = total_loss / (data_size / batch_size)
             accuracy = np.mean(np.argmax(predictions, axis=1) == data_y) # Assuming data_y represents true class labels
             if epoch % 20 == 0: # Compute and print loss every X epochs
-                print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss}, Accuracy: {accuracy}')
+                if self.update_text_callback is not None:
+                    self.update_text_callback(f'Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss}, Accuracy: {accuracy}')
+                    QApplication.processEvents()
+                else:
+                    print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss}, Accuracy: {accuracy}')
 
                 if early_stopping:
                     if average_loss < self.best_val_loss:
@@ -147,10 +155,10 @@ class Model:
             model_data[f'layer{i+1}_biases'] = layer[0].biases
             model_data[f'layer{i+1}_activations'] = layer[1].__dict__
 
-        # Get current working directory for output file    
-        cwd = os.getcwd()
-       
-        with open(f'{cwd}/{name}.json', mode='w') as output:
+        # Get root of directory    
+        root_current_project = os.path.dirname(sys.modules['__main__'].__file__)
+
+        with open(f'{root_current_project}/{name}.json', mode='w') as output:
             # Remove previous content if any
             output.truncate()
             # Write to json
@@ -158,11 +166,10 @@ class Model:
             output.write(content)
       
 
-
     def load_model(self, name: str):
-        # Get current working directory for input file    
-        cwd = os.getcwd()
-        with open(f'{cwd}/{name}', mode='r') as input_file:
+        # Get root of directory    
+        root_current_project = os.path.dirname(sys.modules['__main__'].__file__)
+        with open(f'{root_current_project}/{name}', mode='r') as input_file:
             model_data = json.load(input_file)
 
         layers = []

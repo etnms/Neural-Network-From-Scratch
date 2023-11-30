@@ -1,15 +1,16 @@
-from PyQt6.QtCore import QSize
+from PyQt6.QtCore import QSize, QTimer
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTextEdit, QPushButton, QLabel, QFrame
 from PyQt6.QtGui import QTextCursor
 from gui.round_toggle_switch import CustomRoundToggleSwitch
 from gui.modular_slider import ModularSlider
-
+from model.model import Model
+from testing import layers, training_set_X, training_set_y, testing_set_X, testing_set_y
+import numpy as np
 
 class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-
         central_widget = QWidget()
         layout = QVBoxLayout(central_widget)
         self.setWindowTitle('Neural Network Training')
@@ -19,14 +20,14 @@ class MainWindow(QMainWindow):
         parameters_layout = QVBoxLayout()
 
         # Create instances of ModularSlider with different values
-        slider1 = ModularSlider('Learning rate', 0, 1000, float)
-        parameters_layout.addWidget(slider1)
+        self.learning_rate= ModularSlider('Learning rate', 0, 1000, float) 
+        parameters_layout.addWidget(self.learning_rate)
 
-        slider2 = ModularSlider('Batch size', 0, 1024, int)
-        parameters_layout.addWidget(slider2)
+        self.batch_size = ModularSlider('Batch size', 0, 1024, int)
+        parameters_layout.addWidget(self.batch_size)
 
-        slider3 = ModularSlider('Number of epochs', 0, 1000, int)
-        parameters_layout.addWidget(slider3)
+        self.num_epochs = ModularSlider('Number of epochs', 0, 1000, int)
+        parameters_layout.addWidget(self.num_epochs)
 
         # Toggle switch (checkbok)
         label_early_stopping = QLabel('Early stopping')
@@ -34,16 +35,14 @@ class MainWindow(QMainWindow):
         parameters_layout.addWidget(label_early_stopping)
 
         # Actual checkbox with styling
-        custom_round_toggle_switch = CustomRoundToggleSwitch('Early stopping toggle')
-        parameters_layout.addWidget(custom_round_toggle_switch)
+        self.early_stopping = CustomRoundToggleSwitch('Early stopping toggle')
+        parameters_layout.addWidget(self.early_stopping)
 
-        slider4 = ModularSlider('Early stopping patience', 0, 10, int)
-        parameters_layout.addWidget(slider4)
+        self.early_stopping_patience = ModularSlider('Early stopping patience', 0, 10, int)
+        parameters_layout.addWidget(self.early_stopping_patience)
 
         parameters_layout.setContentsMargins(200,20,200,20)    
         layout.addLayout(parameters_layout)
-
-        
 
         # Create a QTextEdit widget for displaying text
         self.text_edit = QTextEdit(self)
@@ -58,24 +57,35 @@ class MainWindow(QMainWindow):
         # Create a QPushButton to trigger the function
         self.btn = QPushButton('Train model', self)
         self.btn.setStyleSheet('background-color: #489BE8; color: #000; border-radius: 10px; padding: 10px;')
-        self.btn.clicked.connect(self.runFunction)
+        self.btn.clicked.connect(self.train_model)
         
         button_frame_layout.addWidget(self.btn)
         button_frame_layout.setContentsMargins(500, 10, 500, 10)
 
+        self.text_training = ''
+        self.model = Model(layers=layers, update_text_callback=self.update_text_training)
+        
         self.setCentralWidget(central_widget)
 
+    def update_text_training(self, new_text):
+        self.text_training = new_text
+        self.text_edit.append(new_text)
 
-    def runFunction(self):
-        # Example function that adds text to the QTextEdit widget
-        for i in range(30):
-            text_to_add = f'Step {i + 1}: This is some text.\n'
-            self.text_edit.append(text_to_add)
-            # Scroll to the bottom after adding text
-            cursor = self.text_edit.textCursor()
-            cursor.movePosition(QTextCursor.MoveOperation.End)
-            self.text_edit.setTextCursor(cursor)
+    def train_model(self):
+        #model = Model(layers=layers)
+        self.model.train_model(batch_size=self.batch_size.value, num_epochs=self.num_epochs.value, 
+                          learning_rate=self.learning_rate.value,data_X=training_set_X,
+                          data_y=training_set_y, training=True, early_stopping=self.early_stopping.isChecked(), 
+                          early_stopping_patience=self.early_stopping_patience.value, regularization='l1')
+        predictions = self.model.testing_model(data_X=testing_set_X)
 
+    # For binary classification, the prediction is the index of the maximum value in the last layer's output
+        # /!\ need to have something for more than binary classification
+        predicted_classes = np.argmax(predictions, axis=1)
+
+        accuracy = np.mean(predicted_classes == testing_set_y)
+        print(f"Test accuracy: {accuracy}")
+        self.text_edit.append(f"Test accuracy: {accuracy}")
 
 if __name__ == '__main__':
     app = QApplication([])
