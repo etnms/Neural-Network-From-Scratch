@@ -31,8 +31,6 @@ class Model:
     def forward_and_backward_pass(self, data_X, data_y, learning_rate, apply_dropout, training, loss_function_used, regularization):
         x = data_X
         
-
-
         model_parameters = [{'weights': layer.weights, 'biases': layer.biases} for layer in self.layer_dense_list]
         # Forward pass
         for layer, activation, dropout in zip(self.layer_dense_list, self.activation_layer_list, self.dropout_layer_list):

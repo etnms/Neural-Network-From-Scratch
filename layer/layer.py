@@ -25,22 +25,18 @@ class LayerDense:
         else:
             self.biases = np.zeros((1, n_neurons))
 
-        #if use_batch_norm:
-        self.batch_norm = BatchNormalization(n_neurons)
 
     def forward(self, inputs):
         # Check for pandas data type, convert to numpy if data is Series or DataFrame
         if isinstance(inputs, pd.Series) or isinstance(inputs, pd.DataFrame):
             inputs = inputs.to_numpy()
 
-        #inputs = self.batch_norm.forward(inputs)
-
         self.inputs = inputs
         self.output = np.dot(inputs, self.weights) + self.biases
         
         
     def backward(self, dvalues):
-        #dvalues = self.batch_norm.backward(dvalues)
+
         # Gradients on parameters
         self.dweights = np.dot(self.inputs.T, dvalues)
         self.dbiases = np.sum(dvalues, axis=0, keepdims=True)

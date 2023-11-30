@@ -2,7 +2,12 @@ import numpy as np
 
 
 '''
-Batch normalization class. Implements batch normalization (should be apply before layer activation)
+Batch normalization class. Implements batch normalization (should be apply before layer activation).
+
+This class does not currently work. There is a shape mismatch between neurons and inputs in the forward method. 
+Batch normalization is initialized with number of neurons but the forward method uses the input (batch size) which will always
+be different.
+This needs to be fixed or adapted to the network or redone in some other way.
 '''
 
 
