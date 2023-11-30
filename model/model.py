@@ -107,6 +107,7 @@ class Model:
             average_loss = total_loss / (data_size / batch_size)
             accuracy = np.mean(np.argmax(predictions, axis=1) == data_y) # Assuming data_y represents true class labels
             if epoch % 20 == 0: # Compute and print loss every X epochs
+                # If using GUI application then update text in app, else update command line text
                 if self.update_text_callback is not None:
                     self.update_text_callback(f'Epoch {epoch + 1}/{num_epochs}, Loss: {average_loss}, Accuracy: {accuracy}')
                     QApplication.processEvents()
