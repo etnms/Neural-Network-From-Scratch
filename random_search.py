@@ -2,7 +2,7 @@ import pprint
 import random 
 import numpy as np
 from model.model import Model
-from create_layer import CreateLayer
+from layer.create_layer import CreateLayer
 
 
 

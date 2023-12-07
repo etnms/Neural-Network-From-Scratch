@@ -1,12 +1,12 @@
 import numpy as np
 import pandas as pd
 from .weight_initialization import xavier_initialization, normalized_xavier_initialization, he_initialization
-from batch_normalization.batch_normalization import BatchNormalization
+#from batch_normalization.batch_normalization import BatchNormalization
+
 
 '''
 Base class for dense layers.
 
-To do: Need to change np.zeros to random values
 '''
 
 

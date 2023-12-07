@@ -1,15 +1,15 @@
 import numpy as np
 import pandas as pd
 from model.model import Model
-from create_layer import CreateLayer
+from layer.create_layer import CreateLayer
 from split_training_data import split_training_data
 from random_search import RandomSearch
 from dataset import generate_spiral_set
+from layer.create_modular_layer import ModularLayer
+
 '''
 File for testing purposes
 '''
-
-
 
 
 data = pd.read_csv('./dataset/phonemes.csv', encoding='utf-8')  
@@ -40,6 +40,7 @@ layer2 = CreateLayer.create(number_classes=32, number_neurons=16, activation_fun
 layer3 = CreateLayer.create(number_classes=16, number_neurons=5, activation_function='softmax')
 layers=[layer1, layer2, layer3]
 
+layers = ModularLayer.create_modular_layer([number_classes,32,16],[32,16,5], ['relu', 'relu', 'softmax'])
 
 if __name__ == "__main__":
     model = Model(layers=layers)
