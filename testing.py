@@ -44,7 +44,6 @@ layers = ModularLayer.create_modular_layer([number_classes,32,16],[32,16,5], ['r
 
 if __name__ == "__main__":
     model = Model(layers=layers)
-    model.gui = True
     model.train_model(batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
                     data_y=training_set_y, training=True, early_stopping=early_stopping, 
                     early_stopping_patience=early_stopping_patience, regularization='l1')

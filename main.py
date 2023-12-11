@@ -1,6 +1,5 @@
-from PyQt6.QtCore import QSize, QTimer
+from PyQt6.QtCore import QSize
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTextEdit, QPushButton, QLabel, QFrame
-from PyQt6.QtGui import QTextCursor
 from gui.round_toggle_switch import CustomRoundToggleSwitch
 from gui.modular_slider import ModularSlider
 from model.model import Model
