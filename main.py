@@ -77,9 +77,17 @@ class MainWindow(QMainWindow):
 
     def add_section(self):
         # Create a new section and add it to the layout
-        section = DynamicSection()
+        section = DynamicSection(self)
         self.layout.addWidget(section)
         self.sections.append(section)
+        self.adjustSize()
+        section.remove_section_signal.connect(self.remove_section)
+    
+    def remove_section(self, section):
+        # Remove the specified section from the layout and the sections list
+        self.layout.removeWidget(section)
+        section.deleteLater()
+        self.sections.remove(section)
 
     def update_text_training(self, new_text):
         self.text_training = new_text

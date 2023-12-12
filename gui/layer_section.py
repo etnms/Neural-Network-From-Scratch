@@ -1,6 +1,6 @@
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QSpacerItem, QSizePolicy
-
+from PyQt6.QtCore import pyqtSignal
 
 '''
 UI class to create fields for layer creations to add to the model
@@ -8,9 +8,11 @@ UI class to create fields for layer creations to add to the model
 
 
 class DynamicSection(QWidget):
-    def __init__(self):
-        super().__init__()
+    remove_section_signal = pyqtSignal(QWidget)
 
+    def __init__(self, main_window):
+        super().__init__()
+        self.main_window = main_window
         self.init_ui()
 
     def init_ui(self):
@@ -46,4 +48,4 @@ class DynamicSection(QWidget):
 
     def remove_section(self):
         # Emit a signal to notify the parent widget to remove this section
-        self.parent().remove_section(self)
+        self.remove_section_signal.emit(self)
