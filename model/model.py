@@ -8,6 +8,8 @@ import string
 import json
 import sys
 from PyQt6.QtWidgets import QApplication
+import matplotlib.pyplot as plt
+from data_visualization.plot_data import plot_data
 
 '''
 Model class with train and testing functions. 
@@ -70,7 +72,8 @@ class Model:
     def train_model(self, num_epochs, batch_size, learning_rate, 
                     data_X, data_y, training, loss_function_used = None,
                     early_stopping = False,
-                    early_stopping_patience = None, regularization = None):
+                    early_stopping_patience = None, regularization = None,
+                    plot_loss=True):
         
         # Default best accuracy for early stopping (saving best parameters in case of stopping)
         self.prev_best_accuracy = 0
@@ -85,6 +88,10 @@ class Model:
         
         # Check if dropout values have been used
         apply_dropout = self.check_for_dropout(self.dropout_layer_list)
+
+        # Loss history variables for plotting purposes only
+        loss_history = []
+        accuracy_history = []
 
         for epoch in range(num_epochs):
             total_loss = 0
@@ -106,6 +113,11 @@ class Model:
             # Calculate and print the average loss and accuracy for this epoch
             average_loss = total_loss / (data_size / batch_size)
             accuracy = np.mean(np.argmax(predictions, axis=1) == data_y) # Assuming data_y represents true class labels
+
+            # Append loss and accuracy value to array for plot
+            loss_history.append(average_loss)
+            accuracy_history.append(accuracy)
+
             if epoch % 20 == 0: # Compute and print loss every X epochs
                 # If using GUI application then update text in app, else update command line text
                 if self.update_text_callback is not None:
@@ -129,6 +141,11 @@ class Model:
                     if self.no_improvement_count >= early_stopping_patience:
                         print(f'Early stopping at epoch {epoch + 1} as there is no improvement in validation loss.')
                         break
+
+        if plot_loss:
+            plot_data(loss_history,'Training Loss', 'Epoch', 'Loss', 'Training Loss Over Epochs')
+            plot_data(accuracy_history,'Training Accuracy', 'Epoch', 'Accuracy', 'Training Accuracy Over Epochs')
+
 
     def check_for_dropout(self, dropouts):
         if dropouts is None:

@@ -1,9 +1,11 @@
 import numpy as np
 import pandas as pd
-import string
+
+
 '''
 Loss classes. Loss class as base and Categorical Cross entropy derived from it
 '''
+
 
 class Loss:
     def __init__(self, lambda_reg=0.01): # lambda = regularization strength
