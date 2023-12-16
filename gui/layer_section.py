@@ -1,5 +1,5 @@
 
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QSpacerItem, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QSpacerItem, QSizePolicy, QComboBox
 from PyQt6.QtCore import pyqtSignal
 
 '''
@@ -29,6 +29,13 @@ class DynamicSection(QWidget):
         self.edit_y = QLineEdit()
         self.edit_y.setStyleSheet('color: #fff')
 
+        self.activation_dropdown = QComboBox()
+        self.activation_dropdown.addItem('Tanh')
+        self.activation_dropdown.addItem('Relu')
+        self.activation_dropdown.addItem('Sigmoid')
+        self.activation_dropdown.addItem('Softmax')
+        self.activation_dropdown.setStyleSheet('color: #fff')
+
         # Remove button
         self.remove_button = QPushButton('Remove')
         self.remove_button.clicked.connect(self.remove_section)
@@ -40,6 +47,7 @@ class DynamicSection(QWidget):
         input_layout.addWidget(self.edit_x)
         input_layout.addWidget(self.label_y)
         input_layout.addWidget(self.edit_y)
+        input_layout.addWidget(self.activation_dropdown)
 
         # Add input layout and remove button to the main layout
         layout.addLayout(input_layout)
