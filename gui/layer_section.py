@@ -20,14 +20,19 @@ class DynamicSection(QWidget):
 
         # Input fields for each layer
         self.label_x = QLabel('Number of classes:')
+        self.label_x.setStyleSheet('color: #fff')
         self.edit_x = QLineEdit()
+        self.edit_x.setStyleSheet('color: #fff')
 
         self.label_y = QLabel('Number of neurons:')
+        self.label_y.setStyleSheet('color: #fff')
         self.edit_y = QLineEdit()
+        self.edit_y.setStyleSheet('color: #fff')
 
         # Remove button
         self.remove_button = QPushButton('Remove')
         self.remove_button.clicked.connect(self.remove_section)
+        self.remove_button.setStyleSheet('background-color: #B54747; color: #fff')
 
         # Layout for input fields
         input_layout = QVBoxLayout()

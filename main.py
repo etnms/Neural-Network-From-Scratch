@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
         
         # Add section widget for layer creations
         self.add_button = QPushButton('Add Section')
+        self.add_button.setStyleSheet('background-color: #489BE8; color: #000; border-radius: 10px; padding: 10px;')
         self.add_button.clicked.connect(self.add_section)
         self.layout.addWidget(self.add_button)
         # Keeping track of layers
@@ -58,10 +59,11 @@ class MainWindow(QMainWindow):
         self.text_edit.setReadOnly(True)  # Set read-only mode
         self.layout.addWidget(self.text_edit)
 
-        # Create frame for buttom
+        # Create frame for button
         button_frame = QFrame(self)
         self.layout.addWidget(button_frame)
         button_frame_layout = QVBoxLayout(button_frame)
+        
         # Create a QPushButton to trigger the function
         self.btn = QPushButton('Train model', self)
         self.btn.setStyleSheet('background-color: #489BE8; color: #000; border-radius: 10px; padding: 10px;')
@@ -80,7 +82,6 @@ class MainWindow(QMainWindow):
         section = DynamicSection(self)
         self.layout.addWidget(section)
         self.sections.append(section)
-        self.adjustSize()
         section.remove_section_signal.connect(self.remove_section)
     
     def remove_section(self, section):
@@ -101,7 +102,7 @@ class MainWindow(QMainWindow):
                           early_stopping_patience=self.early_stopping_patience.value, regularization='l1')
         predictions = self.model.testing_model(data_X=testing_set_X)
 
-    # For binary classification, the prediction is the index of the maximum value in the last layer's output
+        # For binary classification, the prediction is the index of the maximum value in the last layer's output
         # /!\ need to have something for more than binary classification
         predicted_classes = np.argmax(predictions, axis=1)
 
