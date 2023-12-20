@@ -12,7 +12,8 @@ Base class for dense layers.
 
 class LayerDense:
     def __init__(self, n_inputs, n_neurons, activation_function, random_bias = False):
-        self.neurons = n_neurons
+        self.n_inputs = n_inputs
+        self.n_neurons = n_neurons     
         # Weight initialization with correspond method
         if activation_function == 'relu':
             self.weights = he_initialization(n_inputs, n_neurons)
@@ -25,7 +26,6 @@ class LayerDense:
         else:
             self.biases = np.zeros((1, n_neurons))
 
-
     def forward(self, inputs):
         # Check for pandas data type, convert to numpy if data is Series or DataFrame
         if isinstance(inputs, pd.Series) or isinstance(inputs, pd.DataFrame):
@@ -33,10 +33,8 @@ class LayerDense:
 
         self.inputs = inputs
         self.output = np.dot(inputs, self.weights) + self.biases
-        
-        
+               
     def backward(self, dvalues):
-
         # Gradients on parameters
         self.dweights = np.dot(self.inputs.T, dvalues)
         self.dbiases = np.sum(dvalues, axis=0, keepdims=True)

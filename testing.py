@@ -31,6 +31,7 @@ num_epochs = 200  # Specify the number of training epochs
 early_stopping = True
 early_stopping_patience = 5 # Stop training if validation loss does not improve for 5 consecutive epochs
 
+regularization = 'l1'
 
 # Number of classes = number of inputs
 # In case of second layer until the end it takes the number of neurons from the previous layer
@@ -40,16 +41,16 @@ layer2 = CreateLayer.create(number_classes=32, number_neurons=16, activation_fun
 layer3 = CreateLayer.create(number_classes=16, number_neurons=5, activation_function='softmax')
 layers=[layer1, layer2, layer3]
 
-layers = ModularLayer.create_modular_layer([number_classes,32,16],[32,16,5], ['relu', 'relu', 'softmax'])
+layers = ModularLayer.create_modular_layer([number_classes,32,16], [32,16,5], ['relu', 'relu', 'softmax'])
 
 if __name__ == "__main__":
     model = Model(layers=layers)
     model.train_model(batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
                     data_y=training_set_y, training=True, early_stopping=early_stopping, 
-                    early_stopping_patience=early_stopping_patience, regularization='l1')
+                    early_stopping_patience=early_stopping_patience, regularization=regularization)
 
     # Save model
-    model.save_model(layers=layers, name='model')
+    model.save_model(layers, early_stopping, early_stopping_patience, regularization, name='model')
 
     # Load model
     #layer_dense_list = model.load_model('model.json')
@@ -75,5 +76,5 @@ if __name__ == "__main__":
     random_search = RandomSearch(hyperparameter_ranges)
     random_search.random_search(5, 5, training_set_X=training_set_X, training_set_y=training_set_y, 
                 testing_set_X=testing_set_X, testing_set_y=testing_set_y, early_stopping=True, early_stopping_patience=5)
-                '''
+    '''
 

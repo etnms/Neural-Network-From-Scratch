@@ -136,7 +136,8 @@ class Model:
                     # Early stopping saving best model. Check for acuracy, if higher then update which parameters are good
                     if accuracy > self.prev_best_accuracy:
                         self.prev_best_accuracy = accuracy
-                        self.save_model(self.layers, '/early_stopping_outputs/best_early_stopping')
+                        self.save_model(self.layers, early_stopping, early_stopping_patience, regularization,
+                                        name= '/early_stopping_outputs/best_early_stopping')
 
                     if self.no_improvement_count >= early_stopping_patience:
                         print(f'Early stopping at epoch {epoch + 1} as there is no improvement in validation loss.')
@@ -164,14 +165,20 @@ class Model:
         
         return x
     
-    def save_model(self, layers, name: string):
+    def save_model(self, layers, early_stopping, early_stopping_patience, regularization, name: string):
         model_data = {}
 
         for i, layer in enumerate(layers):
-
+            model_data[f'layer{i+1}_n_neurons'] = layer[0].n_neurons
+            model_data[f'layer{i+1}_n_inputs'] = layer[0].n_inputs
             model_data[f'layer{i+1}_weights'] = layer[0].weights
             model_data[f'layer{i+1}_biases'] = layer[0].biases
             model_data[f'layer{i+1}_activations'] = layer[1].__dict__
+            if layer[2] is not None:
+                model_data[f'layer{i+1}_dropout'] = layer[2].__dict__
+        model_data[f'early_stopping'] = early_stopping
+        model_data[f'early_stopping_patience'] = early_stopping_patience
+        model_data[f'regularization'] = regularization
 
         # Get root of directory    
         root_current_project = os.path.dirname(sys.modules['__main__'].__file__)
