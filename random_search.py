@@ -5,7 +5,6 @@ from model.model import Model
 from layer.create_layer import CreateLayer
 
 
-
 class RandomSearch:
     def __init__(self, hyperpatameter_ranges):
         self.hyperparameter_ranges = hyperpatameter_ranges

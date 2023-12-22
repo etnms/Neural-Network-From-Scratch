@@ -74,7 +74,7 @@ if __name__ == "__main__":
             }
 
     random_search = RandomSearch(hyperparameter_ranges)
-    random_search.random_search(5, 5, training_set_X=training_set_X, training_set_y=training_set_y, 
-                testing_set_X=testing_set_X, testing_set_y=testing_set_y, early_stopping=True, early_stopping_patience=5)
+    random_search.random_search(5, 5, training_set_X, training_set_y, testing_set_X, testing_set_y, 
+                                early_stopping=True, early_stopping_patience=5)
     '''
 

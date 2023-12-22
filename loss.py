@@ -47,7 +47,9 @@ class LossCategoricalCrossentropy(Loss):
         if self.params is None:
             raise ValueError("Model parameters have not been set. Call set_params before forward.")
         
-        total_weights = self.calculate_total_weights()
+        # total weights for regularization
+        if regularization is not None:
+            total_weights = self.calculate_total_weights()
         # L1 regularization
         if regularization == 'l1':
             regularization = self.lambda_reg * np.sum(np.abs(total_weights)) / samples
@@ -101,7 +103,7 @@ class LossMeanSquaredError(Loss):
     def backward(self, dvalues, y_true):
         samples = len(dvalues)
 
-         # Ensure y_true is a column vector
+        # Ensure y_true is a column vector
         if len(y_true.shape) == 1:
             # Reshape, first convert to np array
             y_true = np.array(y_true).reshape(-1, 1)
