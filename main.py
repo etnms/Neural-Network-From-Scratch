@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QSize
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTextEdit, QPushButton, QLabel, QFrame
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QMainWindow, QTextEdit, QPushButton, QLabel, QFrame, QScrollArea
 from gui.round_toggle_switch import CustomRoundToggleSwitch
 from gui.modular_slider import ModularSlider
 from model.model import Model
@@ -7,51 +7,71 @@ from testing import layers, training_set_X, training_set_y, testing_set_X, testi
 import numpy as np
 from gui.layer_section import DynamicSection
 
+
 class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
         central_widget = QWidget()
+
         self.layout = QVBoxLayout(central_widget)
         self.setWindowTitle('Neural Network Training')
         self.setMinimumSize(QSize(500, 500))
         self.setStyleSheet('background-color: #282b30')
         
-        # Add section widget for layer creations
-        self.add_button = QPushButton('Add Section')
-        self.add_button.setStyleSheet('background-color: #489BE8; color: #000; border-radius: 10px; padding: 10px;')
-        self.add_button.clicked.connect(self.add_section)
-        self.layout.addWidget(self.add_button)
-        # Keeping track of layers
-        self.sections = []
 
         # Parameters and parameters layout
-        parameters_layout = QVBoxLayout()
+        self.parameters_layout = QVBoxLayout()
 
         # Create instances of ModularSlider with different values
         self.learning_rate= ModularSlider('Learning rate', 0, 1000, float) 
-        parameters_layout.addWidget(self.learning_rate)
+        self.parameters_layout.addWidget(self.learning_rate)
 
         self.batch_size = ModularSlider('Batch size', 0, 1024, int)
-        parameters_layout.addWidget(self.batch_size)
+        self.parameters_layout.addWidget(self.batch_size)
 
         self.num_epochs = ModularSlider('Number of epochs', 0, 1000, int)
-        parameters_layout.addWidget(self.num_epochs)
+        self.parameters_layout.addWidget(self.num_epochs)
 
         # Toggle switch (checkbok)
         label_early_stopping = QLabel('Early stopping')
         label_early_stopping.setStyleSheet('color: #fff; font-size: 18px')
-        parameters_layout.addWidget(label_early_stopping)
+        self.parameters_layout.addWidget(label_early_stopping)
 
         # Actual checkbox with styling
         self.early_stopping = CustomRoundToggleSwitch('Early stopping toggle')
-        parameters_layout.addWidget(self.early_stopping)
+        self.parameters_layout.addWidget(self.early_stopping)
 
         self.early_stopping_patience = ModularSlider('Early stopping patience', 0, 10, int)
-        parameters_layout.addWidget(self.early_stopping_patience)
+        self.parameters_layout.addWidget(self.early_stopping_patience)
 
-        parameters_layout.setContentsMargins(200,20,200,20)    
-        self.layout.addLayout(parameters_layout)
+        self.parameters_layout.setContentsMargins(0,20,0,20)    
+
+        # Layout for layers and layer creation
+        self.layer_layout = QVBoxLayout()
+
+        # Add section widget for layer creations
+        self.add_button = QPushButton('Add Section')
+        self.add_button.setStyleSheet('background-color: #489BE8; color: #000; border-radius: 10px; padding: 10px;')
+        self.add_button.clicked.connect(self.add_section)
+        self.layer_layout.addWidget(self.add_button)
+
+        # Wrap layer_layout in a QScrollArea
+        layer_scroll_area = QScrollArea()
+        layer_scroll_area.setWidgetResizable(True)
+        layer_scroll_area.setWidget(QWidget())  # Dummy widget for content
+
+        # Set the layout of the dummy widget to layer_layout
+        layer_scroll_area.widget().setLayout(self.layer_layout)
+        # Layout for top section with all hyperparameters (parameters and layers)
+        self.hyperparameters_layout = QHBoxLayout()
+        self.hyperparameters_layout.addLayout(self.parameters_layout)
+        self.hyperparameters_layout.addWidget(layer_scroll_area)
+
+        # Keeping track of layers
+        self.sections = []
+
+        self.layout.addLayout(self.hyperparameters_layout)
 
         # Create a QTextEdit widget for displaying text
         self.text_edit = QTextEdit(self)
@@ -80,7 +100,7 @@ class MainWindow(QMainWindow):
     def add_section(self):
         # Create a new section and add it to the layout
         section = DynamicSection(self)
-        self.layout.addWidget(section)
+        self.layer_layout.addWidget(section)
         self.sections.append(section)
         section.remove_section_signal.connect(self.remove_section)
     
