@@ -89,18 +89,33 @@ class LossCategoricalCrossentropy(Loss):
             regularization_gradient = regularization_gradient.reshape((1, -1)) # reshape regularization array tp match shape
             self.dvalues += regularization_gradient[:, :self.dvalues.shape[1]] # Broadcast to match shape of dvalues (still needed after reshape)
 
-
 class LossMeanSquaredError(Loss):
-    def forward(self, y_pred, y_true):
+    def forward(self, y_pred, y_true, regularization=None):
         if len(y_true.shape) == 1:
             # Reshape, first convert to np array
             y_true = np.array(y_true).reshape(-1, 1)
 
-        # Calculate MSE  
-        sample_losses = np.mean((y_true - y_pred) ** 2, axis=-1) 
+        # Calculate MSE
+        sample_losses = np.mean((y_true - y_pred) ** 2, axis=-1)
+
+        # Regularization term
+        if regularization is not None:
+            total_weights = self.calculate_total_weights()
+
+            # L1 regularization
+            if regularization == 'l1':
+                regularization_term = self.lambda_reg * np.sum(np.abs(total_weights)) / len(y_true)
+            # L2 regularization
+            elif regularization == 'l2':
+                regularization_term = 0.5 * self.lambda_reg * np.sum(total_weights ** 2) / len(y_true)
+            else:
+                regularization_term = 0.0  # No regularization
+
+            sample_losses += regularization_term
+
         return sample_losses
-    
-    def backward(self, dvalues, y_true):
+
+    def backward(self, dvalues, y_true, regularization=None):
         samples = len(dvalues)
 
         # Ensure y_true is a column vector
@@ -110,3 +125,19 @@ class LossMeanSquaredError(Loss):
 
         # Gradient of the mean squared error with respect to the predicted values
         self.dvalues = -2 * (y_true - dvalues) / samples
+
+        # Regularization term in the gradient
+        if regularization is not None:
+            total_weights = self.calculate_total_weights()
+
+            # L1 regularization gradient
+            if regularization == 'l1':
+                regularization_gradient = self.lambda_reg * np.sign(total_weights) / samples
+            # L2 regularization gradient
+            elif regularization == 'l2':
+                regularization_gradient = self.lambda_reg * total_weights / samples
+            else:
+                regularization_gradient = np.zeros_like(total_weights)
+
+            regularization_gradient = regularization_gradient.reshape((1, -1))
+            self.dvalues += regularization_gradient[:, :self.dvalues.shape[1]]

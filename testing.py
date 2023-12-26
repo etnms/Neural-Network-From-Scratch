@@ -31,8 +31,9 @@ num_epochs = 200  # Specify the number of training epochs
 early_stopping = True
 early_stopping_patience = 5 # Stop training if validation loss does not improve for 5 consecutive epochs
 
-regularization = 'l1'
-
+regularization = None
+loss_function_used = None
+training = True
 # Number of classes = number of inputs
 # In case of second layer until the end it takes the number of neurons from the previous layer
 # Ex layer1(2,512), layer2(512,3) layer3(3, 128) etc.
@@ -45,9 +46,9 @@ layers = ModularLayer.create_modular_layer([number_classes,32,16], [32,16,5], ['
 
 if __name__ == "__main__":
     model = Model(layers=layers)
-    model.train_model(batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate,data_X=training_set_X,
-                    data_y=training_set_y, training=True, early_stopping=early_stopping, 
-                    early_stopping_patience=early_stopping_patience, regularization=regularization)
+    model.train_model(num_epochs, batch_size, learning_rate,training_set_X,
+                    training_set_y, training, loss_function_used, early_stopping, 
+                    early_stopping_patience, regularization)
 
     # Save model
     model.save_model(layers, early_stopping, early_stopping_patience, regularization, name='model')
