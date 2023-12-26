@@ -51,12 +51,10 @@ class Model:
         loss_function = loss_function_used
 
         loss_function.set_params(params = model_parameters)
-        loss = loss_function.calculate(x, data_y, regularization)
+        loss = loss_function.calculate(x, data_y, regularization) # forward pass with loss
 
         # Backward pass
-        loss_function.backward(x, data_y, regularization) #activations[-1].output = x, could be used as well since starting from last
-        dvalues = loss_function.dvalues
-
+        dvalues = loss_function.backward(x, data_y, regularization)
         for layer, activation in zip(reversed(self.layer_dense_list), reversed(self.activation_layer_list)):
             activation.backward(dvalues)
             layer.backward(activation.dvalues)

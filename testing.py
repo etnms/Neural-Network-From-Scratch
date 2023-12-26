@@ -31,7 +31,7 @@ num_epochs = 200  # Specify the number of training epochs
 early_stopping = True
 early_stopping_patience = 5 # Stop training if validation loss does not improve for 5 consecutive epochs
 
-regularization = None
+regularization = 'l2'
 loss_function_used = None
 training = True
 # Number of classes = number of inputs
