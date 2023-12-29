@@ -4,9 +4,9 @@ from activation import activation
 from dropout import dropout
 
 class CreateLayer:
-    def create(number_classes: int, number_neurons: int, activation_function: string, dropout_rate: float = None, random_bias = False):
+    def create(number_features: int, number_neurons: int, activation_function: string, dropout_rate: float = None, random_bias = False):
         # Create layer
-        layer_dense = layer.LayerDense(number_classes, number_neurons, activation_function, random_bias)
+        layer_dense = layer.LayerDense(number_features, number_neurons, activation_function, random_bias)
 
         # Create activation function
         match activation_function:

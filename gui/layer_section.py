@@ -20,7 +20,7 @@ class DynamicSection(QWidget):
         layout = QVBoxLayout()
 
         # Input fields for each layer
-        self.label_x = QLabel('Number of classes:')
+        self.label_x = QLabel('Number of features:')
         self.label_x.setStyleSheet('color: #fff')
         self.edit_x = QLineEdit()
         onlyInt = QIntValidator()

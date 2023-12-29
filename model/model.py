@@ -71,7 +71,7 @@ class Model:
                     data_X, data_y, training, loss_function_used = None,
                     early_stopping = False,
                     early_stopping_patience = None, regularization = None,
-                    plot_loss=True):
+                    plot_loss = False):
         
         # Default best accuracy for early stopping (saving best parameters in case of stopping)
         self.prev_best_accuracy = 0

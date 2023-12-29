@@ -18,11 +18,11 @@ X = data[['V1', 'V2', 'V3', 'V4', 'V5']]
 
 y = data['Class']
 
-X#, y = generate_spiral_set.create_data(100, 3)
+#X, y = generate_spiral_set.create_data(100, 3)
 training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_data(X, y, training_size=0.8)
 
-number_classes = 5
-#number_classes = 2
+number_features = 5
+
 
 # Hyperparameters
 learning_rate = 0.3
@@ -37,14 +37,12 @@ training = True
 # Number of classes = number of inputs
 # In case of second layer until the end it takes the number of neurons from the previous layer
 # Ex layer1(2,512), layer2(512,3) layer3(3, 128) etc.
-layer1 = CreateLayer.create(number_classes=number_classes, number_neurons=32, activation_function='relu')
-layer2 = CreateLayer.create(number_classes=32, number_neurons=16, activation_function='relu')
-layer3 = CreateLayer.create(number_classes=16, number_neurons=5, activation_function='softmax')
-layers=[layer1, layer2, layer3]
 
-layers = ModularLayer.create_modular_layer([number_classes,32,16], [32,16,5], ['relu', 'relu', 'softmax'])
+
+layers = ModularLayer.create_modular_layer([number_features,32,16], [32,16,5], ['relu', 'relu', 'softmax'])
 
 if __name__ == "__main__":
+    '''
     model = Model(layers=layers)
     model.train_model(num_epochs, batch_size, learning_rate,training_set_X,
                     training_set_y, training, loss_function_used, early_stopping, 
@@ -63,19 +61,21 @@ if __name__ == "__main__":
 
     accuracy = np.mean(predicted_classes == testing_set_y)
     print(f"Test accuracy: {accuracy}")
-
-    '''
+'''
+    
     hyperparameter_ranges = {
             'learning_rate': (0.001, 0.1),
-            #'hidden_layers': (1, 3),
+            'hidden_layers': (1, 3),
             'number_epochs': (10, 200),
-            'batch_size': (12, 128)
-            #'neurons_per_layer': (64, 256),
-            #'activation': ['relu', 'sigmoid']
+            'batch_size': (12, 128),
+            'neurons_per_layer': (64, 256),
+            'activation': ['relu', 'tanh', 'sigmoid', 'softmax'],
             }
 
     random_search = RandomSearch(hyperparameter_ranges)
-    random_search.random_search(5, 5, training_set_X, training_set_y, testing_set_X, testing_set_y, 
+    number_features = 5
+    number_classes = 3
+    random_search.random_search(2, number_features, number_classes, training_set_X, training_set_y, testing_set_X, testing_set_y, 
                                 early_stopping=True, early_stopping_patience=5)
-    '''
+    
 

@@ -14,9 +14,7 @@ class MainWindow(QMainWindow):
         super().__init__() # PyQT super 
 
         # List of layers for the model, empty at first
-        self.layers_classes = []
-        self.layers_neurons = []
-        self.layers_activation = []
+        self.layers_features, self.layers_neurons, self.layers_activation  = [], [], []
 
         central_widget = QWidget()
 
@@ -119,14 +117,13 @@ class MainWindow(QMainWindow):
         self.text_edit.append(new_text)
 
     def train_model(self):
-
-
+        training = True
+        loss_function_used = None
         self.createLayer()
         self.model = Model(self.layers, update_text_callback=self.update_text_training)
-        self.model.train_model(batch_size=self.batch_size.value, num_epochs=self.num_epochs.value, 
-                          learning_rate=self.learning_rate.value,data_X=training_set_X,
-                          data_y=training_set_y, training=True, early_stopping=self.early_stopping.isChecked(), 
-                          early_stopping_patience=self.early_stopping_patience.value, regularization='l1')
+        self.model.train_model(self.num_epochs.value,self.batch_size.value, self.learning_rate.value,training_set_X,
+                          training_set_y, training,loss_function_used, self.early_stopping.isChecked(), self.early_stopping_patience.value, 
+                          regularization='l1', plot_loss=True)
         predictions = self.model.testing_model(data_X=testing_set_X)
 
         # For binary classification, the prediction is the index of the maximum value in the last layer's output
@@ -142,20 +139,17 @@ class MainWindow(QMainWindow):
 
     def createLayer(self):
         try:
-            for section in self.sections:
-                self.layers_classes.append(int(section.edit_x.text()))
-                self.layers_neurons.append(int(section.edit_y.text()))
-                self.layers_activation.append(section.activation_dropdown.currentData())
-            print(self.layers_classes)
-            print(self.layers_neurons)
-            print(self.layers_activation)
+            self.layers_features = [int(section.edit_x.text()) for section in self.sections]
+            self.layers_neurons = [int(section.edit_y.text()) for section in self.sections]
+            self.layers_activation = [section.activation_dropdown.currentData() for section in self.sections]
+
         except ValueError:
             print('Invalid value')
 
-        self.layers = ModularLayer.create_modular_layer(self.layers_classes, self.layers_neurons, self.layers_activation)
+        self.layers = ModularLayer.create_modular_layer(self.layers_features, self.layers_neurons, self.layers_activation)
 
     def empty_layers(self):
-        self.layers_classes = []
+        self.layers_features = []
         self.layers_neurons = []
         self.layers_activation = []
 
