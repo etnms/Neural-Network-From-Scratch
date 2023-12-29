@@ -1,6 +1,7 @@
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QSpacerItem, QSizePolicy, QComboBox
 from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtGui import QIntValidator
 
 '''
 UI class to create fields for layer creations to add to the model
@@ -22,18 +23,21 @@ class DynamicSection(QWidget):
         self.label_x = QLabel('Number of classes:')
         self.label_x.setStyleSheet('color: #fff')
         self.edit_x = QLineEdit()
+        onlyInt = QIntValidator()
+        self.edit_x.setValidator(onlyInt)
         self.edit_x.setStyleSheet('color: #fff')
 
         self.label_y = QLabel('Number of neurons:')
         self.label_y.setStyleSheet('color: #fff')
         self.edit_y = QLineEdit()
+        self.edit_y.setValidator(onlyInt)
         self.edit_y.setStyleSheet('color: #fff')
 
         self.activation_dropdown = QComboBox()
-        self.activation_dropdown.addItem('Tanh')
-        self.activation_dropdown.addItem('Relu')
-        self.activation_dropdown.addItem('Sigmoid')
-        self.activation_dropdown.addItem('Softmax')
+        self.activation_dropdown.addItem('Tanh', 'tanh')
+        self.activation_dropdown.addItem('ReLU', 'relu')
+        self.activation_dropdown.addItem('Sigmoid', 'sigmoid')
+        self.activation_dropdown.addItem('Softmax', 'softmax')
         self.activation_dropdown.setStyleSheet('color: #fff')
 
         # Remove button

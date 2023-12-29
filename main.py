@@ -3,15 +3,21 @@ from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QMa
 from gui.round_toggle_switch import CustomRoundToggleSwitch
 from gui.modular_slider import ModularSlider
 from model.model import Model
-from testing import layers, training_set_X, training_set_y, testing_set_X, testing_set_y
+from testing import training_set_X, training_set_y, testing_set_X, testing_set_y
 import numpy as np
 from gui.layer_section import DynamicSection
-
+from layer.create_modular_layer import ModularLayer
 
 class MainWindow(QMainWindow):
 
     def __init__(self):
-        super().__init__()
+        super().__init__() # PyQT super 
+
+        # List of layers for the model, empty at first
+        self.layers_classes = []
+        self.layers_neurons = []
+        self.layers_activation = []
+
         central_widget = QWidget()
 
         self.layout = QVBoxLayout(central_widget)
@@ -19,7 +25,6 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(QSize(500, 500))
         self.setStyleSheet('background-color: #282b30')
         
-
         # Parameters and parameters layout
         self.parameters_layout = QVBoxLayout()
 
@@ -33,7 +38,7 @@ class MainWindow(QMainWindow):
         self.num_epochs = ModularSlider('Number of epochs', 0, 1000, int)
         self.parameters_layout.addWidget(self.num_epochs)
 
-        # Toggle switch (checkbok)
+        # Toggle switch (checkbox)
         label_early_stopping = QLabel('Early stopping')
         label_early_stopping.setStyleSheet('color: #fff; font-size: 18px')
         self.parameters_layout.addWidget(label_early_stopping)
@@ -93,7 +98,6 @@ class MainWindow(QMainWindow):
         button_frame_layout.setContentsMargins(500, 10, 500, 10)
 
         self.text_training = ''
-        self.model = Model(layers=layers, update_text_callback=self.update_text_training)
         
         self.setCentralWidget(central_widget)
 
@@ -115,7 +119,10 @@ class MainWindow(QMainWindow):
         self.text_edit.append(new_text)
 
     def train_model(self):
-        #model = Model(layers=layers)
+
+
+        self.createLayer()
+        self.model = Model(self.layers, update_text_callback=self.update_text_training)
         self.model.train_model(batch_size=self.batch_size.value, num_epochs=self.num_epochs.value, 
                           learning_rate=self.learning_rate.value,data_X=training_set_X,
                           data_y=training_set_y, training=True, early_stopping=self.early_stopping.isChecked(), 
@@ -129,6 +136,28 @@ class MainWindow(QMainWindow):
         accuracy = np.mean(predicted_classes == testing_set_y)
         print(f"Test accuracy: {accuracy}")
         self.text_edit.append(f"Test accuracy: {accuracy}")
+        # Remove all layers for next user trials of the model
+        self.empty_layers()
+        self.model = None
+
+    def createLayer(self):
+        try:
+            for section in self.sections:
+                self.layers_classes.append(int(section.edit_x.text()))
+                self.layers_neurons.append(int(section.edit_y.text()))
+                self.layers_activation.append(section.activation_dropdown.currentData())
+            print(self.layers_classes)
+            print(self.layers_neurons)
+            print(self.layers_activation)
+        except ValueError:
+            print('Invalid value')
+
+        self.layers = ModularLayer.create_modular_layer(self.layers_classes, self.layers_neurons, self.layers_activation)
+
+    def empty_layers(self):
+        self.layers_classes = []
+        self.layers_neurons = []
+        self.layers_activation = []
 
 if __name__ == '__main__':
     app = QApplication([])
