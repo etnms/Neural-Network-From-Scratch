@@ -1,3 +1,4 @@
+import pandas as pd
 '''
 Tokenizer and padding functions to preprocess text (convert text to numerical values) so it can be read in the network.
 '''
@@ -9,12 +10,16 @@ def create_tokenizer(sentences):
     tokenized_sentences = []
 
     for sentence in sentences:
+        if pd.isna(sentence):  # Check for NaN values
+            sentence = 'NaN_placeholder'  # Replace NaN with a placeholder string
+
         tokenized_sentence = []
-        for word in sentence.lower().split():  # Convert to lowercase and split into words
+        for word in sentence.lower().split(): # Convert to lowercase and split into words
             if word not in tokenizer:
                 tokenizer[word] = current_index
                 current_index += 1
             tokenized_sentence.append(tokenizer[word])
+        
         tokenized_sentences.append(tokenized_sentence)
 
     return tokenizer, tokenized_sentences

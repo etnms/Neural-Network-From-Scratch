@@ -46,8 +46,6 @@ class Loss:
         return total_weights
 
 class LossCategoricalCrossentropy(Loss):
-
-    
     def calculate_regularization_term(self, total_weights, samples, regularization):
         if self.lambda_reg == 0.0:
             return 0.0  # No regularization
@@ -73,12 +71,15 @@ class LossCategoricalCrossentropy(Loss):
         """
         samples = len(y_true)
         y_pred_clipped = np.clip(y_pred, 1e-7, 1-1e-7) # clip to avoid infinity problem
+        # Preprocess y_true if needed
+        #y_true_numeric = [float(value) for value in y_true]
+        #y_true_indices = np.array([value if not np.isnan(value) else 0 for value in y_true_numeric], dtype=int)
 
         if len(y_true.shape) == 1: # check if scalar values have been passed (shape of array = 1 dim)
             correct_confidences = y_pred_clipped[range(samples), y_true]
-        elif len(y_true.shape) == 2: # check if one encoded vector  (shape of array = 2 dim)
-            correct_confidences = np.sum(y_pred_clipped * y_true, axis=1) # sum on axis 1 = row
 
+        elif len(y_true.shape) == 2: # check if one-hot encoded vector  (shape of array = 2 dim)
+            correct_confidences = np.sum(y_pred_clipped * y_true, axis=1) # sum on axis 1 = row
         if self.params is None:
             raise ValueError("Model parameters have not been set. Call set_params before forward.")
         

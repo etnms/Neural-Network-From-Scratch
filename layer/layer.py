@@ -30,7 +30,6 @@ class LayerDense:
         # Check for pandas data type, convert to numpy if data is Series or DataFrame
         if isinstance(inputs, pd.Series) or isinstance(inputs, pd.DataFrame):
             inputs = inputs.to_numpy()
-
         self.inputs = inputs
         self.output = np.dot(inputs, self.weights) + self.biases
                
