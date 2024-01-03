@@ -20,7 +20,7 @@ to change the model.
 
 
 class Model:
-    def __init__(self, layers,update_text_callback=None):
+    def __init__(self, layers, update_text_callback=None):
         self.layers = layers
         self.best_val_loss = float('inf') # first training will always be less than infinity
         self.no_improvement_count = 0
@@ -200,9 +200,9 @@ class Model:
         while f'layer{i}_weights' in model_data:       
             weights = convert_to_numpy_arrays(model_data[f'layer{i}_weights'])
             biases = convert_to_numpy_arrays(model_data[f'layer{i}_biases'])
-            
+            activation = model_data[f'layer{i}_activations']
             # Need to reconstruct layers based on the loaded data.
-            layer = LayerDense(n_inputs=weights.shape[0], n_neurons=weights.shape[1])
+            layer = LayerDense(n_inputs=weights.shape[0], n_neurons=weights.shape[1], activation_function=activation)
             layer.weights = weights
             layer.biases = biases
 
