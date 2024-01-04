@@ -1,12 +1,16 @@
 from PyQt6.QtCore import QSize
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QMainWindow, QTextEdit, QPushButton, QLabel, QFrame, QScrollArea
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QMainWindow, QTextEdit, QPushButton, QLabel, QScrollArea
 from gui.round_toggle_switch import CustomRoundToggleSwitch
 from gui.modular_slider import ModularSlider
 from model.model import Model
-from testing import training_set_X, training_set_y, testing_set_X, testing_set_y
 import numpy as np
 from gui.layer_section import DynamicSection
+from gui.button import Button
 from layer.create_modular_layers import ModularLayer
+from split_training_data import split_training_data
+from load_csv_data import load_csv_data
+from gui.error_message import show_error_message
+
 
 class MainWindow(QMainWindow):
 
@@ -82,18 +86,11 @@ class MainWindow(QMainWindow):
         self.text_edit.setReadOnly(True)  # Set read-only mode
         self.layout.addWidget(self.text_edit)
 
-        # Create frame for button
-        button_frame = QFrame(self)
-        self.layout.addWidget(button_frame)
-        button_frame_layout = QVBoxLayout(button_frame)
-        
-        # Create a QPushButton to trigger the function
-        self.btn = QPushButton('Train model', self)
-        self.btn.setStyleSheet('background-color: #489BE8; color: #000; border-radius: 10px; padding: 10px;')
-        self.btn.clicked.connect(self.train_model)
-        
-        button_frame_layout.addWidget(self.btn)
-        button_frame_layout.setContentsMargins(500, 10, 500, 10)
+        self.btn_train = Button('Train model', self.train_model)
+        self.layout.addWidget(self.btn_train)
+
+        self.btn_save = Button('Save model', self.save_model)
+        self.layout.addWidget(self.btn_save)
 
         self.text_training = ''
         
@@ -117,25 +114,32 @@ class MainWindow(QMainWindow):
         self.text_edit.append(new_text)
 
     def train_model(self):
-        training = True
-        loss_function_used = None
-        self.createLayer()
-        self.model = Model(self.layers, update_text_callback=self.update_text_training)
-        self.model.train_model(self.num_epochs.value,self.batch_size.value, self.learning_rate.value,training_set_X,
-                          training_set_y, training,loss_function_used, self.early_stopping.isChecked(), self.early_stopping_patience.value, 
-                          regularization='l1', plot_loss=True)
-        predictions = self.model.testing_model(data_X=testing_set_X)
-
-        # For binary classification, the prediction is the index of the maximum value in the last layer's output
-        # /!\ need to have something for more than binary classification
-        predicted_classes = np.argmax(predictions, axis=1)
-
-        accuracy = np.mean(predicted_classes == testing_set_y)
-        print(f"Test accuracy: {accuracy}")
-        self.text_edit.append(f"Test accuracy: {accuracy}")
         # Remove all layers for next user trials of the model
         self.empty_layers()
         self.model = None
+        try:
+            training = True
+            loss_function_used = None
+            self.createLayer()
+            X, y, number_features, number_classes = load_csv_data('../dataset/winequality-red.csv')
+            print(f'Number of features: {number_features}')
+            print(f'Number of classes: {number_classes}')
+            training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_data(X, y, training_size=0.8)
+            self.model = Model(self.layers, update_text_callback=self.update_text_training)
+            self.model.train_model(self.num_epochs.value,self.batch_size.value, self.learning_rate.value,training_set_X,
+                            training_set_y, training,loss_function_used, self.early_stopping.isChecked(), self.early_stopping_patience.value, 
+                            None, plot_loss=True)
+            predictions = self.model.testing_model(data_X=testing_set_X)
+
+            predicted_classes = np.argmax(predictions, axis=1)
+            # Min class labels for dataset that don't start at 0 since they will run an index error
+            min_class_label = np.min(testing_set_y)
+            accuracy = np.mean(predicted_classes == (testing_set_y - min_class_label))
+            print(f"Test accuracy: {accuracy}")
+            self.text_edit.append(f"Test accuracy: {accuracy}")
+        except Exception as e:
+            error_message = str(e)
+            show_error_message(error_message)
 
     def createLayer(self):
         try:
@@ -152,6 +156,13 @@ class MainWindow(QMainWindow):
         self.layers_features = []
         self.layers_neurons = []
         self.layers_activation = []
+
+    def save_model(self):
+        try:
+            self.model.save_model(self.layers, self.early_stopping.isChecked(), self.early_stopping_patience.value, None, name='model') 
+        except Exception as e:
+            error_message = str(e)
+            show_error_message(error_message)
 
 if __name__ == '__main__':
     app = QApplication([])

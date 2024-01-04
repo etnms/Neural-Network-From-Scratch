@@ -112,7 +112,9 @@ class Model:
             
             # Calculate and print the average loss and accuracy for this epoch
             average_loss = total_loss / (data_size / batch_size)
-            accuracy = np.mean(np.argmax(predictions, axis=1) == data_y) # Assuming data_y represents true class labels
+            # Min class labels for dataset that don't start at 0 since they will run an index error
+            min_class_label = np.min(data_y)
+            accuracy = np.mean(np.argmax(predictions, axis=1) == (data_y - min_class_label)) # Assuming data_y represents true class labels
 
             # Append loss and accuracy value to array for plot
             loss_history.append(average_loss)
@@ -173,7 +175,7 @@ class Model:
             model_data[f'layer{i+1}_n_inputs'] = layer[0].n_inputs
             model_data[f'layer{i+1}_weights'] = layer[0].weights
             model_data[f'layer{i+1}_biases'] = layer[0].biases
-            model_data[f'layer{i+1}_activation_param'] = layer[1].__dict__
+            #model_data[f'layer{i+1}_activation_param'] = layer[1].__dict__
             model_data[f'layer{i+1}_activation_name'] = layer[1].__class__.__name__
             if layer[2] is not None:
                 model_data[f'layer{i+1}_dropout'] = layer[2].__dict__

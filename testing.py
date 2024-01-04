@@ -12,12 +12,7 @@ from load_csv_data import load_csv_data
 File for testing purposes
 '''
 
-X, y, number_features, number_classes = load_csv_data('./dataset/phone.csv')
-
-#data = pd.read_csv('./dataset/phonemes.csv', encoding='utf-8') 
-#X = data[['V1', 'V2', 'V3', 'V4', 'V5']]
-#y = data['Class']
-# number_features = X.shape[1]
+X, y, number_features, number_classes = load_csv_data('./dataset/winequality-red.csv')
 
 #X, y = generate_spiral_set.create_data(100, 3)
 
@@ -41,7 +36,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.random_search.lower() == 'false':
-        layers = ModularLayer.create_modular_layers([number_features, 128, 128], [128, 128, 4], ['sigmoid', 'sigmoid', 'softmax'])
+        layers = ModularLayer.create_modular_layers([number_features, 128, 128], [128, 128, number_classes], ['sigmoid', 'sigmoid', 'softmax'])
         model = Model(layers)
         model.train_model(num_epochs, batch_size, learning_rate, training_set_X,
                         training_set_y, training, loss_function_used, early_stopping, 
@@ -52,23 +47,22 @@ if __name__ == "__main__":
 
         # Load model
         predictions = model.testing_model(data_X=testing_set_X)
-    
-        # For binary classification, the prediction is the index of the maximum value in the last layer's output
-            # /!\ need to have something for more than binary classification
         predicted_classes = np.argmax(predictions, axis=1)
-        accuracy = np.mean(predicted_classes == testing_set_y)
+        # Min class labels for dataset that don't start at 0 since they will run an index error
+        min_class_label = np.min(testing_set_y)
+        accuracy = np.mean(predicted_classes == (testing_set_y - min_class_label))
         print(f"Test accuracy: {accuracy}")
     else:
         hyperparameter_ranges = {
                 'learning_rate': (0.001, 0.1),
-                'hidden_layers': (1, 3),
-                'number_epochs': (100, 1000),
+                'hidden_layers': (1, 10),
+                'number_epochs': (20, 300),
                 'batch_size': (12, 128),
-                'neurons_per_layer': (64, 256),
+                'neurons_per_layer': (64, 512),
                 'activation': ['relu', 'tanh', 'sigmoid', 'softmax'],
                 }
 
         random_search = RandomSearch(hyperparameter_ranges)
 
-        random_search.random_search(10, number_features, number_classes, training_set_X, training_set_y, testing_set_X, testing_set_y, 
+        random_search.random_search(1, number_features, number_classes, training_set_X, training_set_y, testing_set_X, testing_set_y, 
                                     early_stopping=True, early_stopping_patience=5)

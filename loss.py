@@ -74,12 +74,15 @@ class LossCategoricalCrossentropy(Loss):
         # Preprocess y_true if needed
         #y_true_numeric = [float(value) for value in y_true]
         #y_true_indices = np.array([value if not np.isnan(value) else 0 for value in y_true_numeric], dtype=int)
-
-        if len(y_true.shape) == 1: # check if scalar values have been passed (shape of array = 1 dim)
-            correct_confidences = y_pred_clipped[range(samples), y_true]
+        
+        # Min class labels for dataset that don't start at 0 since they will run an index error
+        min_class_label = np.min(y_true)
+        
+        if len(y_true.shape) == 1: # check if scalar values have been passed (shape of array = 1 dim)    
+            correct_confidences = y_pred_clipped[range(samples), y_true - min_class_label]
 
         elif len(y_true.shape) == 2: # check if one-hot encoded vector  (shape of array = 2 dim)
-            correct_confidences = np.sum(y_pred_clipped * y_true, axis=1) # sum on axis 1 = row
+            correct_confidences = np.sum(y_pred_clipped * (y_true - min_class_label), axis=1) # sum on axis 1 = row
         if self.params is None:
             raise ValueError("Model parameters have not been set. Call set_params before forward.")
         
@@ -111,7 +114,9 @@ class LossCategoricalCrossentropy(Loss):
 
         # Calculate the gradient
         self.dvalues = dvalues.copy()
-        self.dvalues[range(samples), y_true] -= 1
+        # Min class labels for dataset that don't start at 0 since they will run an index error
+        min_class_label = np.min(y_true)
+        self.dvalues[range(samples), y_true - min_class_label] -= 1
         self.dvalues /= samples
         
         if regularization is not None:

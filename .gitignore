@@ -4,7 +4,7 @@ __pycache__
 
 # Default name for output when writing to json (Save function)
 model.json
-
+best_model.json
 # Early stopping saving of the best model (save in dedicated folder)
 early_stopping_outputs
 

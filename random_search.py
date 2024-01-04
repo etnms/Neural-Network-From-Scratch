@@ -4,10 +4,16 @@ import numpy as np
 from model.model import Model
 from layer.create_layer import CreateLayer
 from layer.create_modular_layers import ModularLayer
+import json
+from utils.utils import convert_to_python_types
+import os, sys
+
 
 class RandomSearch:
     def __init__(self, hyperpatameter_ranges):
         self.hyperparameter_ranges = hyperpatameter_ranges
+        self.best_model = None
+        self.best_accuracy = 0
         self.results = []
 
     def random_search(self, num_random_samples: int, number_features: int, number_classes: int, training_set_X, training_set_y, testing_set_X, testing_set_y, 
@@ -66,11 +72,25 @@ class RandomSearch:
             predictions = model.testing_model(data_X=testing_set_X)
             predicted_classes = np.argmax(predictions, axis=1)
 
-            accuracy = np.mean(predicted_classes == testing_set_y)
+            # Min class labels for dataset that don't start at 0 since they will run an index error
+            min_class_label = np.min(testing_set_y)
+            accuracy = np.mean(predicted_classes == (testing_set_y - min_class_label))
             print(f"Test accuracy: {accuracy}")
             # Store or print the results as needed
             self.results.append({'learning_rate': learning_rate,  'number_epochs' : num_epochs, 'batch_size' : batch_size,
                             'accuracy': accuracy, 'activations' : activation_functions_names, 'n_hidden_layers': hidden_layers,
                             'n_neurons_per_layer': number_neurons_list})
+            
+            # Check what the best model is, if new model is better than update the values
+            if accuracy > self.best_accuracy:
+                self.best_accuracy = accuracy
+                self.best_model = {'learning_rate': learning_rate, 'num_epochs': num_epochs,
+                                   'batch_size': batch_size, 'activations': activation_functions_names,
+                                   'n_hidden_layers': hidden_layers, 'n_neurons_per_layer': number_neurons_list, 'accuracy': accuracy}
 
         pprint.pprint(self.results)
+
+        if self.best_model:
+            root_current_project = os.path.dirname(sys.modules['__main__'].__file__)
+            with open(f'{root_current_project}/best_model.json', 'w') as json_file:
+                json.dump(self.best_model, json_file, indent=2)
