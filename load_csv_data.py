@@ -5,7 +5,6 @@ def load_csv_data(path):
     data = pd.read_csv(f'{path}', encoding='utf-8')
     # Exclude the last column (assuming it's the target variable)
     X = data.iloc[:, :-1]
-    print(X)
     # The last column is the target variable (y)
     y = data.iloc[:, -1]
     number_features = X.shape[1]

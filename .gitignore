@@ -10,3 +10,6 @@ early_stopping_outputs
 
 # Windows script to start the virtual environment
 start_venv.bat
+
+# Dataset folder
+dataset

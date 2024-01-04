@@ -6,7 +6,7 @@ from model.model import Model
 from testing import training_set_X, training_set_y, testing_set_X, testing_set_y
 import numpy as np
 from gui.layer_section import DynamicSection
-from layer.create_modular_layer import ModularLayer
+from layer.create_modular_layers import ModularLayer
 
 class MainWindow(QMainWindow):
 
@@ -146,7 +146,7 @@ class MainWindow(QMainWindow):
         except ValueError:
             print('Invalid value')
 
-        self.layers = ModularLayer.create_modular_layer(self.layers_features, self.layers_neurons, self.layers_activation)
+        self.layers = ModularLayer.create_modular_layers(self.layers_features, self.layers_neurons, self.layers_activation)
 
     def empty_layers(self):
         self.layers_features = []

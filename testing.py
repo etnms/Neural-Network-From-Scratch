@@ -1,10 +1,9 @@
 import numpy as np
 from model.model import Model
-from layer.create_layer import CreateLayer
 from split_training_data import split_training_data
 from random_search import RandomSearch
 from dataset import generate_spiral_set
-from layer.create_modular_layer import ModularLayer
+from layer.create_modular_layers import ModularLayer
 from text_processing.text_processing import create_tokenizer, pad_sentences
 import argparse
 from load_csv_data import load_csv_data
@@ -42,7 +41,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.random_search.lower() == 'false':
-        layers = ModularLayer.create_modular_layer([number_features, 128, 128], [128, 128, 4], ['sigmoid', 'sigmoid', 'softmax'])
+        layers = ModularLayer.create_modular_layers([number_features, 128, 128], [128, 128, 4], ['sigmoid', 'sigmoid', 'softmax'])
         model = Model(layers)
         model.train_model(num_epochs, batch_size, learning_rate, training_set_X,
                         training_set_y, training, loss_function_used, early_stopping, 
@@ -57,7 +56,6 @@ if __name__ == "__main__":
         # For binary classification, the prediction is the index of the maximum value in the last layer's output
             # /!\ need to have something for more than binary classification
         predicted_classes = np.argmax(predictions, axis=1)
-        print(predicted_classes)
         accuracy = np.mean(predicted_classes == testing_set_y)
         print(f"Test accuracy: {accuracy}")
     else:

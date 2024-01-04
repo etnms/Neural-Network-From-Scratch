@@ -3,7 +3,7 @@ import random
 import numpy as np
 from model.model import Model
 from layer.create_layer import CreateLayer
-from layer.create_modular_layer import ModularLayer
+from layer.create_modular_layers import ModularLayer
 
 class RandomSearch:
     def __init__(self, hyperpatameter_ranges):
@@ -52,7 +52,7 @@ class RandomSearch:
             num_epochs = random.randint(*self.hyperparameter_ranges['number_epochs'])
             batch_size = random.randint(*self.hyperparameter_ranges['batch_size'])
 
-            layers = ModularLayer.create_modular_layer(number_features_list, number_neurons_list, activation_functions_names)
+            layers = ModularLayer.create_modular_layers(number_features_list, number_neurons_list, activation_functions_names)
 
             regularization = None
             loss_function_used = None

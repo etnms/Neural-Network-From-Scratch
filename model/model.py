@@ -10,6 +10,8 @@ import sys
 from PyQt6.QtWidgets import QApplication
 import matplotlib.pyplot as plt
 from data_visualization.plot_data import plot_data
+from layer.create_modular_layers import ModularLayer
+from activation import activation
 
 '''
 Model class with train and testing functions. 
@@ -171,7 +173,8 @@ class Model:
             model_data[f'layer{i+1}_n_inputs'] = layer[0].n_inputs
             model_data[f'layer{i+1}_weights'] = layer[0].weights
             model_data[f'layer{i+1}_biases'] = layer[0].biases
-            model_data[f'layer{i+1}_activations'] = layer[1].__dict__
+            model_data[f'layer{i+1}_activation_param'] = layer[1].__dict__
+            model_data[f'layer{i+1}_activation_name'] = layer[1].__class__.__name__
             if layer[2] is not None:
                 model_data[f'layer{i+1}_dropout'] = layer[2].__dict__
         model_data[f'early_stopping'] = early_stopping
@@ -190,23 +193,40 @@ class Model:
       
 
     def load_model(self, name: str):
-        # Get root of directory    
+    # Get root of directory
         root_current_project = os.path.dirname(sys.modules['__main__'].__file__)
+
         with open(f'{root_current_project}/{name}', mode='r') as input_file:
             model_data = json.load(input_file)
 
         layers = []
-        i = 1
-        while f'layer{i}_weights' in model_data:       
-            weights = convert_to_numpy_arrays(model_data[f'layer{i}_weights'])
-            biases = convert_to_numpy_arrays(model_data[f'layer{i}_biases'])
-            activation = model_data[f'layer{i}_activations']
-            # Need to reconstruct layers based on the loaded data.
-            layer = LayerDense(n_inputs=weights.shape[0], n_neurons=weights.shape[1], activation_function=activation)
-            layer.weights = weights
-            layer.biases = biases
 
-            layers.append(layer)
-            i += 1
-    
+        for i in range(1, (len(model_data) - 3) // 5 + 1):
+            # Load layer data
+            n_neurons = model_data[f'layer{i}_n_neurons']
+            n_inputs = model_data[f'layer{i}_n_inputs']
+            weights = model_data[f'layer{i}_weights']
+            biases = model_data[f'layer{i}_biases']
+
+            # Create layer instance
+            layer_dense = LayerDense(n_inputs, n_neurons, activation_function=None)
+            layer_dense.weights = weights
+            layer_dense.biases = biases
+
+            # Load activation function
+            activation_function = model_data[f'layer{i}_activation_name']
+
+            if activation_function == 'ActivationReLU':
+                activation_layer = activation.ActivationReLU()
+            elif activation_function == 'ActivationSoftmax':
+                activation_layer = activation.ActivationSoftmax()
+            elif activation_function == 'ActivationTanh':
+                activation_layer = activation.ActivationTanh()
+            elif activation_function == 'ActivationSigmoid':
+                activation_layer = activation.ActivationSigmoid()
+            else:
+                activation_layer = None
+
+            layers.append((layer_dense, activation_layer, None))
+
         return layers
