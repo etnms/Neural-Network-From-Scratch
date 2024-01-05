@@ -1,5 +1,5 @@
 from PyQt6.QtCore import QSize
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QMainWindow, QTextEdit, QPushButton, QLabel, QScrollArea
+from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QMainWindow, QTextEdit, QPushButton, QLabel, QScrollArea, QFileDialog
 from gui.round_toggle_switch import CustomRoundToggleSwitch
 from gui.modular_slider import ModularSlider
 from model.model import Model
@@ -21,12 +21,18 @@ class MainWindow(QMainWindow):
         self.layers_features, self.layers_neurons, self.layers_activation  = [], [], []
 
         central_widget = QWidget()
-
+        
+        # Open file button
         self.layout = QVBoxLayout(central_widget)
         self.setWindowTitle('Neural Network Training')
         self.setMinimumSize(QSize(500, 500))
         self.setStyleSheet('background-color: #282b30')
-        
+        self.file_button = QPushButton('Open file')
+        self.file_button.setStyleSheet('background-color: #489BE8; color: #000; border-radius: 10px; padding: 10px;')
+        self.file_button.clicked.connect(self.open_file_path)
+        self.file_path = ''
+        self.layout.addWidget(self.file_button)
+
         # Parameters and parameters layout
         self.parameters_layout = QVBoxLayout()
 
@@ -121,7 +127,7 @@ class MainWindow(QMainWindow):
             training = True
             loss_function_used = None
             self.createLayer()
-            X, y, number_features, number_classes = load_csv_data('../dataset/winequality-red.csv')
+            X, y, number_features, number_classes = load_csv_data(self.file_path)
             print(f'Number of features: {number_features}')
             print(f'Number of classes: {number_classes}')
             training_set_X, training_set_y, testing_set_X, testing_set_y = split_training_data(X, y, training_size=0.8)
@@ -160,6 +166,19 @@ class MainWindow(QMainWindow):
     def save_model(self):
         try:
             self.model.save_model(self.layers, self.early_stopping.isChecked(), self.early_stopping_patience.value, None, name='model') 
+        except Exception as e:
+            error_message = str(e)
+            show_error_message(error_message)
+
+    def open_file_path(self):
+        try:
+            # Open a file dialog to select a path
+            selected_path, _ = QFileDialog.getOpenFileName(self, "Select Path", "", "CSV Files (*.csv)")
+
+            if selected_path:
+                self.file_path = selected_path
+                # Do something with the selected path (e.g., print it)
+                print("Selected Path:", selected_path)
         except Exception as e:
             error_message = str(e)
             show_error_message(error_message)

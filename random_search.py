@@ -2,7 +2,6 @@ import pprint
 import random 
 import numpy as np
 from model.model import Model
-from layer.create_layer import CreateLayer
 from layer.create_modular_layers import ModularLayer
 import json
 from utils.utils import convert_to_python_types

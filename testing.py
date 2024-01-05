@@ -12,7 +12,7 @@ from load_csv_data import load_csv_data
 File for testing purposes
 '''
 
-X, y, number_features, number_classes = load_csv_data('./dataset/winequality-red.csv')
+X, y, number_features, number_classes = load_csv_data('./dataset/indian.csv')
 
 #X, y = generate_spiral_set.create_data(100, 3)
 
